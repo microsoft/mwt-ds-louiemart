@@ -4,7 +4,5 @@ packages
 *.suo
 *.log
 *.user
-*.debug.config
-*.release.config
 *.dll
 *.pdb
