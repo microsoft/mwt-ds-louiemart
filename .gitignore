@@ -6,3 +6,5 @@ packages
 *.user
 *.debug.config
 *.release.config
+*.dll
+*.pdb
