@@ -1015,7 +1015,6 @@
     <Content Include="Content\kendo\2014.1.318\images\kendoui.ttf" />
     <Content Include="App_Data\uas_20140809-02.ini" />
     <None Include="Properties\PublishProfiles\louiemart.pubxml" />
-    <None Include="Properties\PublishProfiles\testmart.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\fineuploader\iframe.xss.response-4.2.2.js" />
     <Content Include="Scripts\fineuploader\jquery.fineuploader-4.2.2.js" />
