@@ -1,0 +1,84 @@
+﻿@model PrivateMessageListModel
+@using Nop.Web.Extensions;
+@using Nop.Web.Models.PrivateMessages;
+<div class="private-messages-box">
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $('#selectall-sent').click(function () {
+                $('#pm-sent-table .rowcheckbox').attr('checked', $(this).is(':checked')).change();
+            });
+
+            $('#pm-sent-table .rowcheckbox').on('change', function (e) {
+                var numChkBoxes = $('#pm-sent-table .rowcheckbox').length;
+                var numChkBoxesChecked = $('#pm-sent-table .rowcheckbox:checked').length;
+                $('#selectall-sent').attr('checked', numChkBoxes == numChkBoxesChecked && numChkBoxes > 0);
+            });
+        });
+    </script>
+    @if (Model.Messages.Count > 0)
+    {
+        using (Html.BeginRouteForm("PrivateMessagesSent", FormMethod.Post))
+        {
+            
+            
+        <table class="data-table" id="pm-sent-table">
+            <colgroup>
+                <col width="5%" />
+                <col />
+                <col />
+                <col />
+            </colgroup>
+            <thead>
+                <tr>
+                    <th class="a-center select-boxes">
+                        <input type="checkbox" id="selectall-sent" />
+                    </th>
+                    <th class="a-center to">
+                        @T("PrivateMessages.Inbox.ToColumn")
+                    </th>
+                    <th class="a-center subject">
+                        @T("PrivateMessages.Inbox.SubjectColumn")
+                    </th>
+                    <th class="a-center date">
+                        @T("PrivateMessages.Inbox.DateColumn")
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.Messages.Count; i++)
+                {
+                    var item = Model.Messages[i];
+                    <tr @(i % 2 == 0 ? Html.Raw(" class=\"odd\"") : Html.Raw(" class=\"even\""))>
+                        <td class="a-center select-boxes">
+                            <input type="checkbox" name="si@(item.Id)" class="rowcheckbox" />
+                        </td>
+                        <td class="a-left to">
+                            @if (item.AllowViewingToProfile)
+                            {
+                                @Html.RouteLink(item.CustomerToName, "CustomerProfile", new { Id = item.ToCustomerId })
+                            }
+                            else
+                            {
+                                @item.CustomerToName
+                            }
+                        </td>
+                        <td class="a-left subject">
+                            @Html.RouteLink(item.Subject, "ViewPM", new { privateMessageId = item.Id }, new { @class = "pm-read" })
+                        </td>
+                        <td class="a-left date">
+                            @item.CreatedOn
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <div class="pager">
+            @Html.Pager(Model.PagerModel)
+        </div>
+        <div class="buttons">
+            <input class="button-1 delete-selected-pm-button" name="delete-sent" type="submit" value="@T("PrivateMessages.Inbox.DeleteSelected")" />
+        </div>
+        }
+    }
+</div>

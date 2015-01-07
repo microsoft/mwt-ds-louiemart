@@ -1,0 +1,54 @@
+﻿@model CatalogPagingFilteringModel.SpecificationFilterModel
+@using Nop.Web.Models.Catalog;
+@{
+    var notFilteredItemsGroups = Model.NotFilteredItems.GroupBy(x => x.SpecificationAttributeName);
+}
+@if (Model.Enabled)
+{
+    <div class="product-filters product-spec-filter">
+        <div class="filter-title">
+            <strong>@T("Filtering.SpecificationFilter")</strong>
+        </div>
+        <div class="filter-content">
+            @if (Model.NotFilteredItems.Count > 0)
+            {
+                <div class="available-items">
+                    @foreach (var group in notFilteredItemsGroups)
+                    {
+                        var groupList = group.ToList();
+                        
+                        <ul class="group">
+                            <li class="title">
+                                <strong>@groupList[0].SpecificationAttributeName</strong>
+                            </li>
+
+                            @foreach (var spec in groupList)
+                            {
+                                <li class="item">
+                                    <a href="@spec.FilterUrl">@spec.SpecificationAttributeOptionName</a>
+                                </li>
+                            }
+                        </ul> 
+                    }
+                </div>
+            }
+            @if (Model.AlreadyFilteredItems.Count > 0)
+            {
+                <div class="already-filtered-items">
+                    <div class="filter-title">
+                        @T("Filtering.SpecificationFilter.CurrentlyFilteredBy")
+                    </div>
+                    @foreach (var item in Model.AlreadyFilteredItems)
+                    {
+                        <div class="item">
+                            <strong>@(item.SpecificationAttributeName):</strong> @item.SpecificationAttributeOptionName
+                        </div>
+                    }
+                </div>
+                <div class="remove-filter">
+                    <a href="@Model.RemoveFilterUrl">@T("Filtering.SpecificationFilter.Remove")</a>
+                </div>
+            }
+        </div>
+    </div>
+}

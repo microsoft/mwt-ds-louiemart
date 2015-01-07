@@ -1,0 +1,13 @@
+﻿<div class="forum-search-box">
+    @using (Html.BeginRouteForm("Search", FormMethod.Get))
+    {
+        var searchText = T("Forum.SearchForumsTooltip");
+        <div class="basic">
+            @Html.TextBox("searchterms", searchText, new { @class = "forum-search-box-text", onclick = String.Format("if(this.value=='{0}')this.value=''", searchText), onblur = String.Format("if(this.value=='')this.value='{0}';", searchText) })
+            <input type="submit" value="@T("Forum.SearchButton")" class="button-2 forum-search-box-button" />
+        </div>
+        <div class="advanced">
+            @Html.RouteLink(T("Forum.AdvancedSearch").Text, "Search", new { adv = true }, new { title = T("Forum.AdvancedSearch").Text })
+        </div>
+    }
+</div>

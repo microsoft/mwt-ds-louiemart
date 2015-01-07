@@ -1,0 +1,40 @@
+﻿<script type="text/javascript">
+    $(function () {
+        $('#Username').after('<span id="username-availabilty"></span>');
+        $('#Username').bind({
+            keydown: function () {
+                $('#username-availabilty').text('');
+            }
+        });
+        $('#check-availability-button').click(function () {
+            $('#username-availabilty').text('');
+            if ($("#Username").val().length > 0) {
+                $('#availability-check-progress').show();
+                $('#check-availability-button').attr('disabled', 'disabled');
+                $.ajax({
+                    cache: false,
+                    type: 'POST',
+                    url: '@Url.RouteUrl("CheckUsernameAvailability")',
+                    data: $('#Username').serialize(),
+                    dataType: 'json',
+                    success: function (data) {
+                        $('#check-availability-button').removeAttr('disabled');
+                        $('#availability-check-progress').hide();
+                        $('#username-availabilty').removeAttr('class').attr('class', ((data.Available) ? 'username-available-status' : 'username-not-available-status'));
+                        $('#username-availabilty').text(data.Text);
+                    },
+                    failure: function () {
+                        $('#check-availability-button').removeAttr('disabled');
+                        $('#availability-check-progress').hide();
+                    }
+                });
+            } else {
+                $('#username-availabilty').attr('class', 'not-available-status');
+                $('#username-availabilty').text('*');
+            }
+            return false;
+        });
+    });
+</script>
+<input type="button" id="check-availability-button" class="button-1 check-username-availability-button" value="@T("Account.CheckUsernameAvailability.Button")" />
+<span id="availability-check-progress" style="display: none;" class="please-wait">@T("Common.Wait...")</span>

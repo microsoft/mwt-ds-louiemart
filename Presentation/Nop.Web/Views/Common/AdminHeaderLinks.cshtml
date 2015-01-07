@@ -1,0 +1,17 @@
+﻿@model AdminHeaderLinksModel
+@using Nop.Web.Models.Common;
+@if (Model.IsCustomerImpersonated || Model.DisplayAdminLink)
+{
+    <div class="admin-header-links">
+        @if (Model.IsCustomerImpersonated)
+        {
+            <span class="impersonate">@string.Format(T("Account.ImpersonatedAs").Text, Model.ImpersonatedCustomerEmailUsername)
+                - <a href="@Url.RouteUrl("Logout")" class="finish-impersonation" title="@T("Account.ImpersonatedAs.Finish.Hint")">@T("Account.ImpersonatedAs.Finish")</a>
+            </span>
+        }
+        @if (Model.DisplayAdminLink)
+        {
+            <a href="@Url.Content("~/admin")" class="administration">@T("Account.Administration")</a>
+        }
+    </div>
+}
