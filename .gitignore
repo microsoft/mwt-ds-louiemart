@@ -1,9 +1,20 @@
+# build folders
+**/x64
+**/Debug
+**/Release
+**/dll
+**/ipch
+**/packages
 **/bin
 **/obj
-packages
+
+# VS files
+*.opensdf
 *.suo
 *.log
+*.sdf
 *.user
 *.dll
 *.pdb
+*.so
 *.pubxml
