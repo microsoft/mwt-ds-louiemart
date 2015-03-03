@@ -20,7 +20,7 @@ namespace Nop.Web.Framework.Controllers
     [StoreIpAddress]
     [CustomerLastActivity]
     [StoreLastVisitedPage]
-    public abstract class BaseController : Controller
+    public abstract class BaseController : AsyncController
     {
         /// <summary>
         /// Render partial view to string
