@@ -1,12 +1,13 @@
-﻿@{
+﻿@model int?
+@{
     Layout = "~/Views/Shared/_ColumnsThree.cshtml";
 }
 <div class="page home-page">
     <div class="page-body">
-        @Html.Widget("home_page_top")
+        @*@Html.Widget("home_page_top")*@
         @Html.Action("TopicBlock", "Topic", new { systemName = "HomePageText" })
         @Html.Action("HomepageCategories", "Catalog")
-        @Html.Action("HomepageProducts", "Product")
+        @Html.Action("HomepageProducts", "Product", new { pageNumber = @Model })
         @Html.Action("HomepageBestSellers", "Product")
         @Html.Action("HomePageNews", "News")
         @Html.Action("HomePagePolls", "Poll")

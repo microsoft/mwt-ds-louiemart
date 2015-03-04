@@ -186,8 +186,9 @@ namespace Nop.Services.Catalog
             var query = from p in _productRepository.Table
                         orderby p.DisplayOrder, p.Name
                         where p.Published &&
-                        !p.Deleted &&
-                        p.ShowOnHomePage
+                        !p.Deleted 
+                        //&&
+                        //p.ShowOnHomePage
                         select p;
             var products = query.ToList();
             return products;

@@ -36,6 +36,7 @@ using Nop.Web.Framework.UI.Captcha;
 using Nop.Web.Infrastructure.Cache;
 using Nop.Web.Models.Catalog;
 using Nop.Web.Models.Media;
+using System.Diagnostics;
 
 namespace Nop.Web.Controllers
 {
@@ -1146,19 +1147,59 @@ namespace Nop.Web.Controllers
         }
 
         [ChildActionOnly]
-        public ActionResult HomepageProducts(int? productThumbPictureSize)
+        public ActionResult HomepageProducts(int? pageNumber, int? productThumbPictureSize)
         {
-            var products = _productService.GetAllProductsDisplayedOnHomePage();
-            //ACL and store mapping
-            products = products.Where(p => _aclService.Authorize(p) && _storeMappingService.Authorize(p)).ToList();
-            //availability dates
-            products = products.Where(p => p.IsAvailable()).ToList();
+            string cacheKey = "HPPCK";
+            int pageSize = 6;
 
-            if (products.Count == 0)
-                return Content("");
+            int page = pageNumber.HasValue ? Math.Max(1, pageNumber.Value) : 1;
 
-            var model = PrepareProductOverviewModels(products, true, true, productThumbPictureSize).ToList();
-            return PartialView(model);
+            IList<ProductOverviewModel> model = null;
+            if (this._cacheManager.IsSet(cacheKey) && page > 1)
+            {
+                model = this._cacheManager.Get<IList<ProductOverviewModel>>(cacheKey);
+                Trace.TraceInformation("Get from cache: page {0}, {1} products", page, model.Count);
+            }
+            else
+            {
+                var products = _productService.GetAllProductsDisplayedOnHomePage();
+                //ACL and store mapping
+                products = products.Where(p => _aclService.Authorize(p) && _storeMappingService.Authorize(p)).ToList();
+                //availability dates
+                products = products.Where(p => p.IsAvailable()).ToList();
+
+                if (products.Count == 0)
+                    return Content("");
+
+                model = PrepareProductOverviewModels(products, true, true, productThumbPictureSize).ToList();
+
+                Shuffle(model);
+                this._cacheManager.Set(cacheKey, model, cacheTime: 60); // 1-hour cache
+
+                Trace.TraceInformation("Created cache: page {0}", page);
+
+                // When the list of products is recreated and reshuffled, reset as the first page
+                page = 1;
+            }
+
+            var modelPerPage = model.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+            var kvpModel = new KeyValuePair<int, IList<ProductOverviewModel>>(page, modelPerPage);
+
+            return PartialView(kvpModel);
+        }
+
+        static void Shuffle<T>(IList<T> list)
+        {
+            Random rng = new Random();
+            int n = list.Count;
+            while (n > 1)
+            {
+                n--;
+                int k = rng.Next(n + 1);
+                T value = list[k];
+                list[k] = list[n];
+                list[n] = value;
+            }
         }
 
         #endregion

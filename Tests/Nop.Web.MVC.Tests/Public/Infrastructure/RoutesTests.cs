@@ -10,7 +10,7 @@ namespace Nop.Web.MVC.Tests.Public.Infrastructure
         [Test]
         public void Default_route()
         {
-            "~/".ShouldMapTo<HomeController>(c => c.Index());
+            "~/".ShouldMapTo<HomeController>(c => c.Index(0));
         }
 
         [Test]
