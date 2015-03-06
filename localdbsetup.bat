@@ -7,4 +7,4 @@ call "C:\Program Files\Microsoft SQL Server\120\Tools\Binn\SqlLocalDB.exe" info 
 
 echo To Install nopCommerce:
 echo Sql Server name: (localdb)\%INSTNAME%
-echo Database name:  (localdb)\%DBNAME%
+echo Database name:  %DBNAME%

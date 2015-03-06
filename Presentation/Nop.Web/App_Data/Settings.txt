@@ -1,2 +1,2 @@
-DataProvider: sqlserver
-DataConnectionString: Data Source=(localdb)\LocalDBnopCommercev1;Initial Catalog=Louiemart;Integrated Security=True;Persist Security Info=False
+DataProvider: 
+DataConnectionString: 
