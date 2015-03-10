@@ -7,6 +7,7 @@
             '<p class="master-trace-date">' + moment(timestamp).format(momentFormat) + '</p>' +
             '<p class="master-trace-message">' + htmlEncode(message) + '</p>' +
             '</div>');
+        $("#master-wrapper-trace").scrollTop($("#master-wrapper-trace")[0].scrollHeight);
     };
     $.connection.hub.start();
 
