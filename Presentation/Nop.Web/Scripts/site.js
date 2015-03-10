@@ -12,7 +12,7 @@
     $.connection.hub.start();
 
     $('.master-trace-date').each(function () {
-        var momentDateTime = moment($(this).attr('data-utcdate'));
+        var momentDateTime = moment(Number($(this).attr('data-utcdate')));
         $(this).html(momentDateTime.format(momentFormat));
     });
 });

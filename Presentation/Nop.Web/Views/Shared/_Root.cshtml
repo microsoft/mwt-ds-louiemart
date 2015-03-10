@@ -35,7 +35,7 @@
     @foreach (TraceMessage trm in DecisionServiceTrace.TraceMessageList)
     {
         <div>
-            <p class="master-trace-date" data-utc-date="@trm.TimeStampInMillisecSinceUnixEpoch"></p>
+            <p class="master-trace-date" data-utcdate="@trm.TimeStampInMillisecSinceUnixEpoch"></p>
             <p class="master-trace-message">@trm.Message</p>
         </div>
     }
