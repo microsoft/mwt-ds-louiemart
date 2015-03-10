@@ -14,7 +14,13 @@ namespace Nop.Web.Controllers
         {
             if (page.HasValue && page.Value == 99) // Reset
             {
+                // Clear trace messages
                 DecisionServiceTrace.Clear();
+
+                // TODO: Reset DecisionService objects (policy, recorder, etc...)
+                // TODO: Reset Storage account (delete incomplete storage, complete storage, model store)
+                // TODO: Reset web settings if in selected-model-update mode
+
                 return RedirectToAction("Index");
             }
             HostingEnvironment.QueueBackgroundWorkItem(token =>
