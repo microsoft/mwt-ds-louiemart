@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using ClientDecisionService;
+using Microsoft.AspNet.SignalR;
 using MultiWorldTesting;
-using ClientDecisionService;
+using Nop.Web.Hubs;
+using System;
+using System.Collections.Generic;
 
 namespace Nop.Web.Extensions
 {
@@ -41,6 +41,34 @@ namespace Nop.Web.Extensions
                 Service = new DecisionService<TContext>(Configuration);
             }
         }
+    }
+
+    public static class DecisionServiceTrace
+    {
+        static List<TraceMessage> traceMessageList = new List<TraceMessage>();
+
+        public static List<TraceMessage> TraceMessageList
+        {
+            get { return DecisionServiceTrace.traceMessageList; }
+        }
+
+        public static void Add(TraceMessage trm) 
+        {
+            traceMessageList.Add(trm);
+
+            IHubContext hub = GlobalHost.ConnectionManager.GetHubContext<TraceHub>();
+            hub.Clients.All.addNewMessageToPage(trm.Message);
+        }
+
+        public static void Clear()
+        {
+            traceMessageList.Clear();
+        }
+    }
+
+    public class TraceMessage
+    {
+        public string Message { get; set; }
     }
 
     class MartPolicy<TContext> : IPolicy<TContext>

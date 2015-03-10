@@ -27,5 +27,17 @@
     </div>
     @Html.Action("Footer", "Common")
 </div>
+<div id="master-wrapper-trace">
+    <p><strong>Decision Service Event Log</strong></p>
+    <div class="buttons">
+        <a class="button-1" href="@Url.Action("Index", "Home", new { page = 99 })">Reset</a>
+    </div>
+    @foreach (TraceMessage trm in DecisionServiceTrace.TraceMessageList)
+    {
+        <div>
+            <p class="master-trace-message">@trm.Message</p>
+        </div>
+    }
+</div>
 @Html.Action("EuCookieLaw", "Common")
 @Html.Widget("body_end_html_tag_before")

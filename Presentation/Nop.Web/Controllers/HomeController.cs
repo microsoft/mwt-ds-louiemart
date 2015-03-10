@@ -12,6 +12,11 @@ namespace Nop.Web.Controllers
         [NopHttpsRequirement(SslRequirement.No)]
         public ActionResult Index(int? page)
         {
+            if (page.HasValue && page.Value == 99) // Reset
+            {
+                DecisionServiceTrace.Clear();
+                return RedirectToAction("Index");
+            }
             HostingEnvironment.QueueBackgroundWorkItem(token =>
             {
                 DecisionServiceWrapper<string>.Create(

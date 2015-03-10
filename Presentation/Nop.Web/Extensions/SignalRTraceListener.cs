@@ -1,6 +1,4 @@
-﻿using Nop.Web.Hubs;
-using Microsoft.AspNet.SignalR;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
 namespace Nop.Web.Extensions
 {
@@ -10,8 +8,7 @@ namespace Nop.Web.Extensions
 
         public override void WriteLine(string message)
         {
-            IHubContext hub = GlobalHost.ConnectionManager.GetHubContext<TraceHub>();
-            hub.Clients.All.addNewMessageToPage(message);
+            DecisionServiceTrace.Add(new TraceMessage { Message = message });
         }
     }
 }
