@@ -66,7 +66,7 @@ namespace Nop.Web.Extensions
             traceMessageList.Add(trm);
 
             IHubContext hub = GlobalHost.ConnectionManager.GetHubContext<TraceHub>();
-            hub.Clients.All.addNewMessageToPage(trm.Message);
+            hub.Clients.All.addNewMessageToPage(trm.Message, trm.TimeStampInMillisecSinceUnixEpoch);
         }
 
         public static void Clear()
@@ -78,6 +78,14 @@ namespace Nop.Web.Extensions
     public class TraceMessage
     {
         public string Message { get; set; }
+        public double TimeStampInMillisecSinceUnixEpoch { get; set; }
+
+        public TraceMessage()
+        {
+            TimeStampInMillisecSinceUnixEpoch = DateTime.UtcNow
+                .Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc))
+                .TotalMilliseconds;
+        }
     }
 
     class MartPolicy<TContext> : IPolicy<TContext>

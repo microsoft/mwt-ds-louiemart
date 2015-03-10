@@ -39,7 +39,7 @@ input[type="text"]:disabled{background:none repeat scroll 0 0 #FFF;}
 .master-wrapper-content{float:left;width:930px;margin:15px 15px 0 15px;padding:15px 0 0;text-align:left;background:none repeat scroll 0 0 #FFFFFF;}
 .master-wrapper-main{font-family:arial,helvetica,sans-serif;color:#5C5B5B;}
 #master-wrapper-trace{position:absolute;top:30px;right:10px;width:300px;padding:10px 5px 10px 5px;background:none repeat scroll 0 0 #FFF;box-shadow:0 0.5em 2em rgba(0,0,0,0.1);-moz-box-shadow:0 0.5em 2em rgba(0,0,0,0.1);-webkit-box-shadow:0 0.5em 2em rgba(0,0,0,0.1);}
-.master-trace-date{font-weight:bold;padding-bottom:5px;}
+.master-trace-date{text-align:left;font-weight:bold;padding:5px 10px;background:#eee;}
 .master-trace-message{text-align:left;padding-left:10px;}
 /* one column master page */
 .master-wrapper-main .center-1{float:left;width:910px;min-height:400px;padding:10px;background:#FFF;display:inline;border-radius:5px;}
