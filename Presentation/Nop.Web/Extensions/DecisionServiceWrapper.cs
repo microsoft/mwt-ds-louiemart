@@ -45,6 +45,8 @@ namespace Nop.Web.Extensions
 
     public static class DecisionServiceTrace
     {
+        public static readonly int MaxTraceCount = 1000;
+
         static List<TraceMessage> traceMessageList = new List<TraceMessage>();
 
         public static List<TraceMessage> TraceMessageList
@@ -54,6 +56,13 @@ namespace Nop.Web.Extensions
 
         public static void Add(TraceMessage trm) 
         {
+            if (traceMessageList.Count >= DecisionServiceTrace.MaxTraceCount)
+            {
+                traceMessageList.Clear();
+                DecisionServiceTrace.Add(new TraceMessage {
+                    Message = string.Format("Max # trace messages received : {0}, resetting.", DecisionServiceTrace.MaxTraceCount)
+                });
+            }
             traceMessageList.Add(trm);
 
             IHubContext hub = GlobalHost.ConnectionManager.GetHubContext<TraceHub>();
