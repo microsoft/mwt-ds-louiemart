@@ -2,12 +2,11 @@
     var momentFormat = "M/DD/YYYY h:mm:ss a";
     var chat = $.connection.traceHub;
     chat.client.addNewMessageToPage = function (message, timestamp) {
-        $('#master-wrapper-trace').append(
+        $('#master-wrapper-trace .buttons').after(
             '<div>' +
             '<p class="master-trace-date">' + moment(timestamp).format(momentFormat) + '</p>' +
             '<p class="master-trace-message">' + htmlEncode(message) + '</p>' +
             '</div>');
-        $("#master-wrapper-trace").scrollTop($("#master-wrapper-trace")[0].scrollHeight);
     };
     $.connection.hub.start();
 

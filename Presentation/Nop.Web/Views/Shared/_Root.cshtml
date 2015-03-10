@@ -32,8 +32,9 @@
     <div class="buttons">
         <a class="button-1" href="@Url.Action("Index", "Home", new { page = 99 })">Reset</a>
     </div>
-    @foreach (TraceMessage trm in DecisionServiceTrace.TraceMessageList)
+    @for (int i = DecisionServiceTrace.TraceMessageList.Count - 1; i >= 0; i--)
     {
+        TraceMessage trm = DecisionServiceTrace.TraceMessageList[i];
         <div>
             <p class="master-trace-date" data-utcdate="@trm.TimeStampInMillisecSinceUnixEpoch"></p>
             <p class="master-trace-message">@trm.Message</p>
