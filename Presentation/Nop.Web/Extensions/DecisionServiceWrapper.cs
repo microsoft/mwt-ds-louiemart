@@ -41,6 +41,43 @@ namespace Nop.Web.Extensions
                 Service = new DecisionService<TContext>(Configuration);
             }
         }
+
+        public static void Reset(string appToken)
+        {
+            // Clear trace messages
+            DecisionServiceTrace.Clear();
+
+            // Reset DecisionService objects
+            Explorer = null;
+            Configuration = null;
+            Service = null;
+
+            // Reset all settings via the command center (storage, metadata, etc...)
+            using (var client = new System.Net.Http.HttpClient())
+            {
+                var values = new Dictionary<string, string>
+                {
+                    { "token", appToken }
+                };
+                var content = new System.Net.Http.FormUrlEncodedContent(values);
+
+                var responseTask = client.PostAsync(
+                    // TODO: use https
+                    "http://mwtds.azurewebsites.net/Application/Reset",
+                    content
+                );
+                responseTask.Wait();
+
+                var response = responseTask.Result;
+                if (!response.IsSuccessStatusCode)
+                {
+                    var t2 = response.Content.ReadAsStringAsync();
+                    t2.Wait();
+                    System.Diagnostics.Trace.TraceError("Failed to reset application. Result : {0}, Reason: {1}, Details: {2}", 
+                        t2.Result, response.ReasonPhrase, response.Headers.ToString());
+                }
+            }
+        }
     }
 
     public static class DecisionServiceTrace
