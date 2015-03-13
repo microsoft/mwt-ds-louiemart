@@ -4,9 +4,9 @@ namespace Nop.Web.Hubs
 {
     public class TraceHub : Hub
     {
-        public void Send(string message)
+        public void Send(string message, double timeStamp)
         {
-            Clients.All.addNewMessageToPage(message);
+            Clients.All.addNewMessageToPage(message, timeStamp);
         }
     }
 }
