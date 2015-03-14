@@ -41,6 +41,25 @@ input[type="text"]:disabled{background:none repeat scroll 0 0 #FFF;}
 #master-wrapper-trace{position:fixed;top:30px;right:10px;bottom:30px;overflow-y:scroll;width:300px;padding:10px 5px 10px 5px;background:none repeat scroll 0 0 #FFF;box-shadow:0 0.5em 2em rgba(0,0,0,0.1);-moz-box-shadow:0 0.5em 2em rgba(0,0,0,0.1);-webkit-box-shadow:0 0.5em 2em rgba(0,0,0,0.1);}
 .master-trace-date{text-align:left;font-weight:bold;padding:5px 10px;background:#eee;}
 .master-trace-message{text-align:left;padding-left:10px;}
+#master-trace-image{margin:5px 0px;}
+/*normal trace images*/
+.trace-image-client-server-interaction{height:180px;background:url("http://res.cloudinary.com/dgtxfxwfk/image/upload/c_scale,w_800/v1426358736/trace-client-server-interaction_qtyqko.jpg") no-repeat center;background-size:contain;}
+.trace-image-client-server-reward{height:180px;background:url("http://res.cloudinary.com/dgtxfxwfk/image/upload/c_scale,w_800/v1426358736/trace-client-server-reward_k8eozl.jpg") no-repeat center;background-size:contain;}
+.trace-image-server-storage{height:180px;background:url("http://res.cloudinary.com/dgtxfxwfk/image/upload/c_scale,w_800/v1426358736/trace-server-storage_ekjjs7.jpg") no-repeat center;background-size:contain;}
+.trace-image-azureml-storage{height:180px;background:url("http://res.cloudinary.com/dgtxfxwfk/image/upload/c_scale,w_800/v1426358737/trace-azureml-storage_go3tcg.jpg") no-repeat center;background-size:contain;}
+.trace-image-storage-client{height:180px;background:url("http://res.cloudinary.com/dgtxfxwfk/image/upload/c_scale,w_800/v1426358736/trace-storage-client_pyzudp.jpg") no-repeat center;background-size:contain;}
+/*gif trace images*/
+.trace-gif-client-server-interaction{height:180px;background:url("http://res.cloudinary.com/dgtxfxwfk/image/upload/c_scale,w_800/v1426361675/trace-client-server-interaction_xtiuce.gif") no-repeat center;background-size:contain;}
+.trace-gif-client-server-reward{height:180px;background:url("http://res.cloudinary.com/dgtxfxwfk/image/upload/c_scale,w_800/v1426361676/trace-client-server-reward_ffvrv9.gif") no-repeat center;background-size:contain;}
+.trace-gif-server-storage{height:180px;background:url("http://res.cloudinary.com/dgtxfxwfk/image/upload/c_scale,w_800/v1426361678/trace-server-storage_a2ipme.gif") no-repeat center;background-size:contain;}
+.trace-gif-azureml-storage{height:180px;background:url("http://res.cloudinary.com/dgtxfxwfk/image/upload/c_scale,w_800/v1426361676/trace-azureml-storage_iwpezj.gif") no-repeat center;background-size:contain;}
+.trace-gif-storage-client{height:180px;background:url("http://res.cloudinary.com/dgtxfxwfk/image/upload/c_scale,w_800/v1426361677/trace-storage-client_zoofgx.gif") no-repeat center;background-size:contain;}
+/*static trace images*/
+.trace-image-static-client-server-interaction{height:180px;background:url("http://res.cloudinary.com/dgtxfxwfk/image/upload/c_scale,w_800/v1426361672/trace-client-server-interaction-static_o8s5vk.jpg") no-repeat center;background-size:contain;}
+.trace-image-static-client-server-reward{height:180px;background:url("http://res.cloudinary.com/dgtxfxwfk/image/upload/c_scale,w_800/v1426361674/trace-client-server-reward-static_b5b3ag.jpg") no-repeat center;background-size:contain;}
+.trace-image-static-server-storage{height:180px;background:url("http://res.cloudinary.com/dgtxfxwfk/image/upload/c_scale,w_800/v1426361674/trace-server-storage-static_nucenx.jpg") no-repeat center;background-size:contain;}
+.trace-image-static-azureml-storage{height:180px;background:url("http://res.cloudinary.com/dgtxfxwfk/image/upload/c_scale,w_800/v1426361674/trace-azureml-storage-static_chl985.jpg") no-repeat center;background-size:contain;}
+.trace-image-static-storage-client{height:180px;background:url("http://res.cloudinary.com/dgtxfxwfk/image/upload/c_scale,w_800/v1426361674/trace-storage-client-static_t1h4hc.jpg") no-repeat center;background-size:contain;}
 /* one column master page */
 .master-wrapper-main .center-1{float:left;width:910px;min-height:400px;padding:10px;background:#FFF;display:inline;border-radius:5px;}
 /* two column master page */

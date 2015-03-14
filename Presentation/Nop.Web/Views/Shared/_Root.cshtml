@@ -29,9 +29,10 @@
 </div>
 <div id="master-wrapper-trace">
     <p><strong>Decision Service Event Log</strong></p>
-    <div class="buttons">
+    <div>
         <a class="button-1" href="@Url.Action("Index", "Home", new { page = 99 })">Reset</a>
     </div>
+    <div id="master-trace-image" class="buttons"></div>
     @for (int i = DecisionServiceTrace.TraceMessageList.Count - 1; i >= 0; i--)
     {
         TraceMessage trm = DecisionServiceTrace.TraceMessageList[i];
