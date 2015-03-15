@@ -53,6 +53,12 @@ namespace Nop.Web.Extensions
             // Clear trace messages
             DecisionServiceTrace.Clear();
 
+            if (true)
+            {
+                // TODO: turn on actual reset code after testing.
+                return;
+            }
+
             // Reset DecisionService objects
             Explorer = null;
             Configuration = null;
@@ -101,7 +107,7 @@ namespace Nop.Web.Extensions
                         DecisionServiceWrapper<string>.Service.ReportReward(1f, explorationKeys[i]);
                     }
                 }
-                Trace.WriteLine("Reported 0 reward for unclicked products.");
+                Trace.WriteLine("Reported rewards for presented products.");
 
                 // Clears cache once rewards have been determined.
                 cacheManager.Remove(ProductController.JoinKeyCacheKey);
