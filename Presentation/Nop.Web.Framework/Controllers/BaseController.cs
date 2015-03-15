@@ -20,6 +20,7 @@ namespace Nop.Web.Framework.Controllers
     [StoreIpAddress]
     [CustomerLastActivity]
     [StoreLastVisitedPage]
+    [NoCache]
     public abstract class BaseController : AsyncController
     {
         /// <summary>
