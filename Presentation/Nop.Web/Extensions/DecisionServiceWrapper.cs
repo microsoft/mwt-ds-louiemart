@@ -1,19 +1,25 @@
 ﻿using ClientDecisionService;
 using Microsoft.AspNet.SignalR;
 using MultiWorldTesting;
+using Nop.Core.Caching;
+using Nop.Web.Controllers;
 using Nop.Web.Hubs;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Nop.Web.Extensions
 {
     public static class DecisionServiceWrapper<TContext>
     {
+        static readonly string appId = "louiemart";
+        static readonly string appToken = "c7b77291-f267-43da-8cc3-7df7ec2aeb06";
+
         public static EpsilonGreedyExplorer<TContext> Explorer { get; set; }
         public static DecisionServiceConfiguration<TContext> Configuration { get; set; }
         public static DecisionService<TContext> Service { get; set; }
 
-        public static void Create(string appId, string appToken, float epsilon, uint numActions, string modelOutputDir)
+        public static void Create(float epsilon, uint numActions, string modelOutputDir)
         {
             if (Explorer == null)
             {
@@ -27,10 +33,10 @@ namespace Nop.Web.Extensions
                     PolicyModelOutputDir = modelOutputDir,
                     BatchConfig = new BatchingConfiguration 
                     {
-                        MaxDuration = TimeSpan.FromSeconds(5),
-                        MaxBufferSizeInBytes = 10,
-                        MaxEventCount = 1,
-                        MaxUploadQueueCapacity = 1,
+                        MaxDuration = TimeSpan.FromSeconds(2),
+                        MaxBufferSizeInBytes = 1024,
+                        MaxEventCount = 100,
+                        MaxUploadQueueCapacity = 4,
                         UploadRetryPolicy = BatchUploadRetryPolicy.Retry
                     }
                 };
@@ -42,7 +48,7 @@ namespace Nop.Web.Extensions
             }
         }
 
-        public static void Reset(string appToken)
+        public static void Reset()
         {
             // Clear trace messages
             DecisionServiceTrace.Clear();
@@ -76,6 +82,29 @@ namespace Nop.Web.Extensions
                     System.Diagnostics.Trace.TraceError("Failed to reset application. Result : {0}, Reason: {1}, Details: {2}", 
                         t2.Result, response.ReasonPhrase, response.Headers.ToString());
                 }
+            }
+        }
+
+        public static void ReportRewardForCachedProducts(ICacheManager cacheManager, int explorationJoinKeyIndex = -1)
+        {
+            if (cacheManager.IsSet(ProductController.JoinKeyCacheKey))
+            {
+                var explorationKeys = cacheManager.Get<List<string>>(ProductController.JoinKeyCacheKey);
+                for (int i = 0; i < explorationKeys.Count; i++)
+                {
+                    if (i != explorationJoinKeyIndex)
+                    {
+                        DecisionServiceWrapper<string>.Service.ReportReward(0f, explorationKeys[i]);
+                    }
+                    else
+                    {
+                        DecisionServiceWrapper<string>.Service.ReportReward(1f, explorationKeys[i]);
+                    }
+                }
+                Trace.WriteLine("Reported 0 reward for unclicked products.");
+
+                // Clears cache once rewards have been determined.
+                cacheManager.Remove(ProductController.JoinKeyCacheKey);
             }
         }
     }

@@ -13,12 +13,14 @@ namespace Nop.Web.Models.Catalog
             DefaultPictureModel = new PictureModel();
             SpecificationAttributeModels = new List<ProductSpecificationModel>();
             ReviewOverviewModel = new ProductReviewOverviewModel();
+            ExplorationJoinKeyIndex = -1;
         }
 
         public string Name { get; set; }
         public string ShortDescription { get; set; }
         public string FullDescription { get; set; }
         public string SeName { get; set; }
+        public int ExplorationJoinKeyIndex { get; set; }
 
         //price
         public ProductPriceModel ProductPrice { get; set; }

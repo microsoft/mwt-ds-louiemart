@@ -16,17 +16,25 @@
     else
     {
         addtocartlink = Url.RouteUrl("AddProductToCart-Catalog", new { productId = Model.Id, shoppingCartTypeId = shoppingCartTypeId, quantity = quantity, });
-    }    
+    }
+
+    var webHelper = EngineContext.Current.Resolve<IWebHelper>();
+    string productDetailsUrl = Url.RouteUrl("Product", new { SeName = Model.SeName });
+    if (Model.ExplorationJoinKeyIndex > -1)
+    {
+        productDetailsUrl = webHelper.ModifyQueryString(productDetailsUrl, "updatecartitemid=0", null);
+        productDetailsUrl = webHelper.ModifyQueryString(productDetailsUrl, "explorationJoinKeyIndex=" + Model.ExplorationJoinKeyIndex, null);
+    }
 }
 <div class="product-item" data-productid="@Model.Id">
     <div class="picture">
-        <a href="@Url.RouteUrl("Product", new { SeName = Model.SeName })" title="@Model.DefaultPictureModel.Title">
+        <a href="@productDetailsUrl" title="@Model.DefaultPictureModel.Title">
             <img alt="@Model.DefaultPictureModel.AlternateText" src="@Model.DefaultPictureModel.ImageUrl" title="@Model.DefaultPictureModel.Title" />
         </a>
     </div>
     <div class="details">
         <h2 class="product-title">
-            <a href="@Url.RouteUrl("Product", new { SeName = Model.SeName })">@Model.Name</a>
+            <a href="@productDetailsUrl">@Model.Name</a>
         </h2>
         @if (Model.ReviewOverviewModel.AllowCustomerReviews)
         {

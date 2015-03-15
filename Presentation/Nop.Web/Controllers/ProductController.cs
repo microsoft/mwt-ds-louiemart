@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.ServiceModel.Syndication;
-using System.Web.Mvc;
-using Nop.Core;
+﻿using Nop.Core;
 using Nop.Core.Caching;
 using Nop.Core.Domain.Catalog;
 using Nop.Core.Domain.Customers;
@@ -36,7 +30,15 @@ using Nop.Web.Framework.UI.Captcha;
 using Nop.Web.Infrastructure.Cache;
 using Nop.Web.Models.Catalog;
 using Nop.Web.Models.Media;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
+using System.Linq;
+using System.ServiceModel.Syndication;
+using System.Threading;
+using System.Web.Hosting;
+using System.Web.Mvc;
 
 namespace Nop.Web.Controllers
 {
@@ -83,6 +85,11 @@ namespace Nop.Web.Controllers
         private readonly ICacheManager _cacheManager;
         
         #endregion
+
+        public static readonly string CacheKey = "HPPCK";
+        public static readonly string JoinKeyCacheKey = "HPPJKCK";
+        public static readonly int PageSize = 6;
+        public static readonly int CacheTimeout = 120; // 2-hour timeout
 
 		#region Constructors
 
@@ -859,7 +866,7 @@ namespace Nop.Web.Controllers
         #region Product details page
 
         [NopHttpsRequirement(SslRequirement.No)]
-        public ActionResult ProductDetails(int productId, int updatecartitemid = 0)
+        public ActionResult ProductDetails(int productId, int updatecartitemid = 0, int explorationJoinKeyIndex = -1)
         {
             var product = _productService.GetProductById(productId);
             if (product == null || product.Deleted)
@@ -914,6 +921,8 @@ namespace Nop.Web.Controllers
                     return RedirectToRoute("Product", new { SeName = product.GetSeName() });
                 }
             }
+
+            DecisionServiceWrapper<string>.ReportRewardForCachedProducts(this._cacheManager, explorationJoinKeyIndex);
 
             //prepare the model
             var model = PrepareProductDetailsPageModel(product, updatecartitem, false);
@@ -1149,16 +1158,13 @@ namespace Nop.Web.Controllers
         [ChildActionOnly]
         public ActionResult HomepageProducts(int? pageNumber, int? productThumbPictureSize)
         {
-            string cacheKey = "HPPCK";
-            int pageSize = 6;
-
-            int page = pageNumber.HasValue ? Math.Max(1, pageNumber.Value) : 1;
+            DecisionServiceWrapper<string>.ReportRewardForCachedProducts(this._cacheManager);
 
             IList<ProductOverviewModel> model = null;
-            if (this._cacheManager.IsSet(cacheKey) && page > 1)
+            if (this._cacheManager.IsSet(CacheKey))
             {
-                model = this._cacheManager.Get<IList<ProductOverviewModel>>(cacheKey);
-                Trace.TraceInformation("Get from cache: page {0}, {1} products", page, model.Count);
+                model = this._cacheManager.Get<IList<ProductOverviewModel>>(CacheKey);
+                Trace.TraceInformation("Get from cache {0} products", model.Count);
             }
             else
             {
@@ -1173,33 +1179,47 @@ namespace Nop.Web.Controllers
 
                 model = PrepareProductOverviewModels(products, true, true, productThumbPictureSize).ToList();
 
-                Shuffle(model);
-                this._cacheManager.Set(cacheKey, model, cacheTime: 60); // 1-hour cache
+                this._cacheManager.Set(CacheKey, model, CacheTimeout);
 
-                Trace.TraceInformation("Created cache: page {0}", page);
-
-                // When the list of products is recreated and reshuffled, reset as the first page
-                page = 1;
+                Trace.TraceInformation("Created cache.");
             }
+            var explorationProducts = new List<ProductOverviewModel>();
+            var explorationKeys = new List<string>();
+            ManualResetEvent msr = new ManualResetEvent(false);
 
-            var modelPerPage = model.Skip((page - 1) * pageSize).Take(pageSize).ToList();
-            var kvpModel = new KeyValuePair<int, IList<ProductOverviewModel>>(page, modelPerPage);
-
-            return PartialView(kvpModel);
-        }
-
-        static void Shuffle<T>(IList<T> list)
-        {
-            Random rng = new Random();
-            int n = list.Count;
-            while (n > 1)
+            HostingEnvironment.QueueBackgroundWorkItem(token =>
             {
-                n--;
-                int k = rng.Next(n + 1);
-                T value = list[k];
-                list[k] = list[n];
-                list[n] = value;
-            }
+                DecisionServiceWrapper<string>.Create(
+                    epsilon: .2f,
+                    numActions: (uint)model.Count,
+                    modelOutputDir: HostingEnvironment.MapPath("~/VWModel/")
+                );
+
+                // Ensure uniqueness of exploration products
+                var uniqueProductSet = new HashSet<int>();
+                while (explorationProducts.Count < PageSize)
+                {
+                    string uniqueKey = Guid.NewGuid().ToString();
+                    int productIdx = (int)DecisionServiceWrapper<string>.Service.ChooseAction(uniqueKey, context: string.Empty);
+                    productIdx--; // Convert to 0-based index
+                    if (!uniqueProductSet.Contains(productIdx))
+                    {
+                        model[productIdx].ExplorationJoinKeyIndex = explorationProducts.Count;
+
+                        uniqueProductSet.Add(productIdx);
+                        explorationProducts.Add(model[productIdx]);
+                        explorationKeys.Add(uniqueKey);
+                    }
+                }
+
+                msr.Set();
+            });
+
+            msr.WaitOne();
+
+            this._cacheManager.Set(JoinKeyCacheKey, explorationKeys, CacheTimeout);
+
+            return PartialView(new KeyValuePair<int, IList<ProductOverviewModel>>(0, explorationProducts));
         }
 
         #endregion
