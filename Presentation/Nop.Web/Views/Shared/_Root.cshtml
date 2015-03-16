@@ -1,5 +1,31 @@
 ﻿@{
     Layout = "~/Views/Shared/_Root.Head.cshtml";
+
+    string traceClass = "buttons {0}";
+    
+    switch (CurrentTraceType.Value)
+    {
+        case TraceType.ClientToServerInteraction:
+            traceClass = string.Format(traceClass, "trace-gif-client-server-interaction");
+            break;
+        case TraceType.ClientToServerReward:
+            traceClass = string.Format(traceClass, "trace-gif-client-server-reward");
+            break;
+        case TraceType.ServerToStorage:
+            traceClass = string.Format(traceClass, "trace-gif-server-storage");
+            break;
+        case TraceType.AzureMLToStorage:
+            traceClass = string.Format(traceClass, "trace-gif-azureml-storage");
+            break;
+        case TraceType.StorageToClient:
+            traceClass = string.Format(traceClass, "trace-gif-storage-client");
+            break;
+        default:
+            break;
+    }
+
+    // Reset after every use
+    CurrentTraceType.Value = TraceType.None;
 }
 @Html.Widget("body_start_html_tag_after")
 @Html.Partial("_Notifications")
@@ -32,7 +58,7 @@
     <div>
         <a class="button-1" href="@Url.Action("Index", "Home", new { page = 99 })">Reset</a>
     </div>
-    <div id="master-trace-image" class="buttons"></div>
+     <div id="master-trace-image" class="@traceClass"></div>
     @for (int i = DecisionServiceTrace.TraceMessageList.Count - 1; i >= 0; i--)
     {
         TraceMessage trm = DecisionServiceTrace.TraceMessageList[i];

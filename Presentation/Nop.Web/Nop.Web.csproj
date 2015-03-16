@@ -242,6 +242,7 @@
     <Compile Include="Extensions\ControllerExtensions.cs" />
     <Compile Include="Extensions\MappingExtensions.cs" />
     <Compile Include="Extensions\SignalRTraceListener.cs" />
+    <Compile Include="Extensions\TraceType.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>

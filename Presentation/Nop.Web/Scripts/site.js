@@ -1,8 +1,21 @@
 ﻿$(function () {
     var extraSpace = $(window).width() - $('.master-wrapper-page').width();
     var defaultTraceWidth = $('#master-wrapper-trace').width();
-    var traceWidth = Math.min(500, Math.max(defaultTraceWidth, extraSpace / 2));
+    var traceWidth = Math.min(400, Math.max(defaultTraceWidth, extraSpace / 2));
     $('#master-wrapper-trace').width(traceWidth);
+
+    $("#master-trace-image").resizable({
+        handles: 's'
+    });
+
+    var defaultTraceClass = "";
+    var classes = $("#master-trace-image").attr('class').split(" ");
+    for (var i = 0; i < classes.length; i++) {
+        if (classes[i].indexOf("trace-") >= 0) {
+            continue;
+        }
+        defaultTraceClass += classes[i] + " ";
+    }
 
     var momentFormat = "M/DD/YYYY h:mm:ss a";
     var chat = $.connection.traceHub;
@@ -12,12 +25,13 @@
             '<p class="master-trace-date">' + moment(timestamp).format(momentFormat) + '</p>' +
             '<p class="master-trace-message">' + htmlEncode(message) + '</p>' +
             '</div>');
+
+        if (message.toLowerCase().indexOf("model update") >= 0) {
+            $('#master-trace-image').removeClass();
+            $('#master-trace-image').addClass(defaultTraceClass + ' trace-gif-storage-client');
+        }
     };
     $.connection.hub.start();
-
-    $("#master-trace-image").resizable({
-        handles: 's'
-    });
 
     $('.master-trace-date').each(function () {
         var momentDateTime = moment(Number($(this).attr('data-utcdate')));

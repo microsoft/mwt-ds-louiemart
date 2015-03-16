@@ -924,6 +924,15 @@ namespace Nop.Web.Controllers
 
             DecisionServiceWrapper<string>.ReportRewardForCachedProducts(this._cacheManager, explorationJoinKeyIndex);
 
+            if (explorationJoinKeyIndex >= 0)
+            {
+                CurrentTraceType.Value = TraceType.ClientToServerReward;
+            }
+            else
+            {
+                CurrentTraceType.Value = TraceType.None;
+            }
+
             //prepare the model
             var model = PrepareProductDetailsPageModel(product, updatecartitem, false);
 
@@ -1218,6 +1227,8 @@ namespace Nop.Web.Controllers
             msr.WaitOne();
 
             this._cacheManager.Set(JoinKeyCacheKey, explorationKeys, CacheTimeout);
+
+            CurrentTraceType.Value = TraceType.ClientToServerInteraction;
 
             return PartialView(new KeyValuePair<int, IList<ProductOverviewModel>>(0, explorationProducts));
         }
