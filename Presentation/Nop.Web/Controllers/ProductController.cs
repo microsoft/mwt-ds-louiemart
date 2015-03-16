@@ -924,15 +924,6 @@ namespace Nop.Web.Controllers
 
             DecisionServiceWrapper<string>.ReportRewardForCachedProducts(this._cacheManager, explorationJoinKeyIndex);
 
-            if (explorationJoinKeyIndex >= 0)
-            {
-                CurrentTraceType.Value = TraceType.ClientToServerReward;
-            }
-            else
-            {
-                CurrentTraceType.Value = TraceType.None;
-            }
-
             //prepare the model
             var model = PrepareProductDetailsPageModel(product, updatecartitem, false);
 

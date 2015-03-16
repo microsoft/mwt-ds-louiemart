@@ -111,6 +111,8 @@ namespace Nop.Web.Extensions
 
                 // Clears cache once rewards have been determined.
                 cacheManager.Remove(ProductController.JoinKeyCacheKey);
+
+                CurrentTraceType.Value = TraceType.ClientToServerReward;
             }
         }
     }
