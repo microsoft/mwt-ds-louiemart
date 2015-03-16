@@ -232,7 +232,7 @@ namespace Nop.Web.Extensions
                 {
                     if (i != explorationJoinKeyIndex)
                     {
-                        DecisionServiceWrapper<string>.Service.ReportReward(0f, explorationKeys[i]);
+                        DecisionServiceWrapper<string>.Service.ReportReward(-1f, explorationKeys[i]);
                     }
                     else
                     {

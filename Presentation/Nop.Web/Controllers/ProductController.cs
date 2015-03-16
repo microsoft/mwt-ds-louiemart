@@ -1200,7 +1200,7 @@ namespace Nop.Web.Controllers
                 while (explorationProducts.Count < PageSize)
                 {
                     string uniqueKey = Guid.NewGuid().ToString();
-                    int productIdx = (int)DecisionServiceWrapper<string>.Service.ChooseAction(uniqueKey, context: string.Empty);
+                    int productIdx = (int)DecisionServiceWrapper<string>.Service.ChooseAction(uniqueKey, context: null);
                     productIdx--; // Convert to 0-based index
                     if (!uniqueProductSet.Contains(productIdx))
                     {
