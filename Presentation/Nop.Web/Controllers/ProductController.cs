@@ -1215,6 +1215,11 @@ namespace Nop.Web.Controllers
                 msr.Set();
             });
 
+            HostingEnvironment.QueueBackgroundWorkItem(token =>
+            {
+                DecisionServiceWrapper<string>.ObserveStorageAndRetrain(token, model.Count);
+            });
+
             msr.WaitOne();
 
             this._cacheManager.Set(JoinKeyCacheKey, explorationKeys, CacheTimeout);

@@ -30,6 +30,14 @@
             $('#master-trace-image').removeClass();
             $('#master-trace-image').addClass(defaultTraceClass + ' trace-gif-storage-client');
         }
+        else if (message.toLowerCase().indexOf("new data created") >= 0) {
+            $('#master-trace-image').removeClass();
+            $('#master-trace-image').addClass(defaultTraceClass + ' trace-gif-server-storage');
+        }
+        else if (message.toLowerCase().indexOf("retrain model success") >= 0) {
+            $('#master-trace-image').removeClass();
+            $('#master-trace-image').addClass(defaultTraceClass + ' trace-gif-azureml-storage');
+        }
     };
     $.connection.hub.start();
 

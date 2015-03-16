@@ -1,12 +1,17 @@
 ﻿using ClientDecisionService;
 using Microsoft.AspNet.SignalR;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Blob;
 using MultiWorldTesting;
+using Newtonsoft.Json;
 using Nop.Core.Caching;
 using Nop.Web.Controllers;
 using Nop.Web.Hubs;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Net;
+using System.Threading;
 
 namespace Nop.Web.Extensions
 {
@@ -14,10 +19,15 @@ namespace Nop.Web.Extensions
     {
         static readonly string appId = "louiemart";
         static readonly string appToken = "c7b77291-f267-43da-8cc3-7df7ec2aeb06";
+        static readonly string commandCenterAddress = "http://mwtds.azurewebsites.net";
+
+        static readonly int ServerObserveDelay = 1000;
+        static readonly int ModelRetrainDelay = 5000;
 
         public static EpsilonGreedyExplorer<TContext> Explorer { get; set; }
         public static DecisionServiceConfiguration<TContext> Configuration { get; set; }
         public static DecisionService<TContext> Service { get; set; }
+        public static DateTimeOffset LastBlobModifiedDate { get; set; }
 
         public static void Create(float epsilon, uint numActions, string modelOutputDir)
         {
@@ -48,6 +58,127 @@ namespace Nop.Web.Extensions
             }
         }
 
+        public static void ObserveStorageAndRetrain(CancellationToken cancelToken, int numberOfActions)
+        {
+            bool retrainOnUpdate = true;
+
+            CloudStorageAccount storageAccount = null;
+            CloudBlobClient blobClient = null;
+            try
+            {
+                using (var wc = new WebClient())
+                {
+                    string jsonMetadata = wc.DownloadString(commandCenterAddress + "/Application/GetMetadata?token=" + appToken);
+                    ApplicationTransferMetadata appMetadata = JsonConvert.DeserializeObject<ApplicationTransferMetadata>(jsonMetadata);
+
+                    storageAccount = CloudStorageAccount.Parse(appMetadata.ConnectionString);
+                    blobClient = storageAccount.CreateCloudBlobClient();
+                    
+                }
+            }
+            catch { }
+
+            if (storageAccount == null || blobClient == null)
+            {
+                retrainOnUpdate = false;
+                Trace.TraceWarning("Could not connect to Azure Storage for observation, Model Retraining will run automatically every {0} ms.", ModelRetrainDelay);
+            }
+
+            int waitCount = 0;
+
+            if (LastBlobModifiedDate == null)
+            {
+                LastBlobModifiedDate = new DateTimeOffset();
+            }
+
+            while (!cancelToken.IsCancellationRequested)
+            {
+                cancelToken.WaitHandle.WaitOne(ServerObserveDelay);
+                waitCount++;
+
+                if (retrainOnUpdate)
+                {
+                    IEnumerable<CloudBlobContainer> containers = blobClient.ListContainers("complete");
+
+                    var lastDate = new DateTimeOffset();
+                    CloudBlobContainer lastContainer = null;
+                    foreach (var container in containers)
+                    {
+                        if (container.Properties.LastModified.Value >= lastDate)
+                        {
+                            lastDate = container.Properties.LastModified.Value;
+                            lastContainer = container;
+                        }
+                    }
+                    if (lastContainer != null)
+                    {
+                        IEnumerable<IListBlobItem> blobs = lastContainer.ListBlobs();
+                        foreach (var blob in blobs)
+                        {
+                            if (blob is CloudBlockBlob)
+                            {
+                                DateTimeOffset blobDate = ((CloudBlockBlob)blob).Properties.LastModified.Value;
+                                if (blobDate >= lastDate)
+                                {
+                                    lastDate = blobDate;
+                                }
+                            }
+                        }
+                        if (lastDate > LastBlobModifiedDate)
+                        {
+                            LastBlobModifiedDate = lastDate;
+                            Trace.WriteLine("Join Server: new data created.");
+
+                            RetrainModel(numberOfActions);
+                        }
+                    }
+                }
+                else
+                {
+                    if (waitCount >= ((float)ModelRetrainDelay / ServerObserveDelay))
+                    {
+                        RetrainModel(numberOfActions);
+                        waitCount = 0;
+                    }
+                }
+            }
+        }
+
+        static void RetrainModel(int numberOfActions)
+        {
+            using (var client = new System.Net.Http.HttpClient())
+            {
+                var values = new Dictionary<string, string>
+                {
+                    { "token", appToken },
+                    { "numberOfActions", numberOfActions.ToString() }
+                };
+
+                var content = new System.Net.Http.FormUrlEncodedContent(values);
+
+                var responseTask = client.PostAsync(
+                    commandCenterAddress + "/Application/RetrainModel",
+                    content
+                );
+                responseTask.Wait();
+
+                var response = responseTask.Result;
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    var t2 = response.Content.ReadAsStringAsync();
+                    t2.Wait();
+
+                    Trace.TraceError("AzureML: Failed to retrain model, Result: {0}, Reason: {1}, Headers: {2}.", 
+                        t2.Result, response.ReasonPhrase, response.Headers.ToString());
+                }
+                else
+                {
+                    Trace.WriteLine("AzureML: Retrain model success.");
+                }
+            }
+        }
+
         public static void Reset()
         {
             // Clear trace messages
@@ -63,6 +194,7 @@ namespace Nop.Web.Extensions
             Explorer = null;
             Configuration = null;
             Service = null;
+            LastBlobModifiedDate = new DateTimeOffset();
 
             // Reset all settings via the command center (storage, metadata, etc...)
             using (var client = new System.Net.Http.HttpClient())
@@ -75,7 +207,7 @@ namespace Nop.Web.Extensions
 
                 var responseTask = client.PostAsync(
                     // TODO: use https
-                    "http://mwtds.azurewebsites.net/Application/Reset",
+                    commandCenterAddress + "/Application/Reset",
                     content
                 );
                 responseTask.Wait();
@@ -168,5 +300,16 @@ namespace Nop.Web.Extensions
         {
             return 5;
         }
+    }
+
+    public class ApplicationTransferMetadata
+    {
+        public string ApplicationID { get; set; }
+
+        public string ConnectionString { get; set; }
+
+        public string ModelId { get; set; }
+
+        public int ExperimentalUnitDuration { get; set; }
     }
 }
