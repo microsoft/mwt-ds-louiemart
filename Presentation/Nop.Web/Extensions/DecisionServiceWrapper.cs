@@ -21,6 +21,7 @@ namespace Nop.Web.Extensions
         static readonly string appToken = "c7b77291-f267-43da-8cc3-7df7ec2aeb06";
         static readonly string commandCenterAddress = "http://mwtds.azurewebsites.net";
 
+        static readonly bool AutoRetrain = true;
         static readonly int ServerObserveDelay = 1000;
         static readonly int ModelRetrainDelay = 5000;
 
@@ -130,7 +131,7 @@ namespace Nop.Web.Extensions
                             LastBlobModifiedDate = lastDate;
                             Trace.WriteLine("Join Server: new data created.");
 
-                            RetrainModel(numberOfActions);
+                            AutoRetrainModel(numberOfActions);
                         }
                     }
                 }
@@ -138,15 +139,19 @@ namespace Nop.Web.Extensions
                 {
                     if (waitCount >= ((float)ModelRetrainDelay / ServerObserveDelay))
                     {
-                        RetrainModel(numberOfActions);
+                        AutoRetrainModel(numberOfActions);
                         waitCount = 0;
                     }
                 }
             }
         }
 
-        static void RetrainModel(int numberOfActions)
+        static void AutoRetrainModel(int numberOfActions)
         {
+            if (!AutoRetrain)
+            {
+                return;
+            }
             using (var client = new System.Net.Http.HttpClient())
             {
                 var values = new Dictionary<string, string>
