@@ -12,7 +12,7 @@ namespace Nop.Web.Controllers
         {
             if (page.HasValue && page.Value == 99) // Reset
             {
-                DecisionServiceWrapper<string>.Reset();
+                DecisionServiceWrapper<object>.Reset();
                 return RedirectToAction("Index");
             }
             return View(page);

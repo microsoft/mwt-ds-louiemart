@@ -922,7 +922,7 @@ namespace Nop.Web.Controllers
                 }
             }
 
-            DecisionServiceWrapper<string>.ReportRewardForCachedProducts(this._cacheManager, explorationJoinKeyIndex);
+            DecisionServiceWrapper<object>.ReportRewardForCachedProducts(this._cacheManager, explorationJoinKeyIndex);
 
             //prepare the model
             var model = PrepareProductDetailsPageModel(product, updatecartitem, false);
@@ -1158,7 +1158,7 @@ namespace Nop.Web.Controllers
         [ChildActionOnly]
         public ActionResult HomepageProducts(int? pageNumber, int? productThumbPictureSize)
         {
-            DecisionServiceWrapper<string>.ReportRewardForCachedProducts(this._cacheManager);
+            DecisionServiceWrapper<object>.ReportRewardForCachedProducts(this._cacheManager);
 
             IList<ProductOverviewModel> model = null;
             if (this._cacheManager.IsSet(CacheKey))
@@ -1189,7 +1189,7 @@ namespace Nop.Web.Controllers
 
             HostingEnvironment.QueueBackgroundWorkItem(token =>
             {
-                DecisionServiceWrapper<string>.Create(
+                DecisionServiceWrapper<object>.Create(
                     epsilon: .2f,
                     numActions: (uint)model.Count,
                     modelOutputDir: HostingEnvironment.MapPath("~/VWModel/")
@@ -1200,7 +1200,7 @@ namespace Nop.Web.Controllers
                 while (explorationProducts.Count < PageSize)
                 {
                     string uniqueKey = Guid.NewGuid().ToString();
-                    int productIdx = (int)DecisionServiceWrapper<string>.Service.ChooseAction(uniqueKey, context: null);
+                    int productIdx = (int)DecisionServiceWrapper<object>.Service.ChooseAction(uniqueKey, context: new { Date = DateTime.Now.ToString() } );
                     productIdx--; // Convert to 0-based index
                     if (!uniqueProductSet.Contains(productIdx))
                     {
@@ -1217,7 +1217,7 @@ namespace Nop.Web.Controllers
 
             HostingEnvironment.QueueBackgroundWorkItem(token =>
             {
-                DecisionServiceWrapper<string>.ObserveStorageAndRetrain(token, model.Count);
+                DecisionServiceWrapper<object>.ObserveStorageAndRetrain(token, model.Count);
             });
 
             msr.WaitOne();

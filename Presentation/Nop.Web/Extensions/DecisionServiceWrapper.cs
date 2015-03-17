@@ -232,11 +232,11 @@ namespace Nop.Web.Extensions
                 {
                     if (i != explorationJoinKeyIndex)
                     {
-                        DecisionServiceWrapper<string>.Service.ReportReward(-1f, explorationKeys[i]);
+                        DecisionServiceWrapper<object>.Service.ReportReward(-1f, explorationKeys[i]);
                     }
                     else
                     {
-                        DecisionServiceWrapper<string>.Service.ReportReward(1f, explorationKeys[i]);
+                        DecisionServiceWrapper<object>.Service.ReportReward(1f, explorationKeys[i]);
                     }
                 }
                 Trace.WriteLine("Reported rewards for presented products.");

@@ -429,7 +429,7 @@ namespace Nop.Web.Controllers
             if (!_storeMappingService.Authorize(category))
                 return InvokeHttp404();
 
-            DecisionServiceWrapper<string>.ReportRewardForCachedProducts(this._cacheManager);
+            DecisionServiceWrapper<object>.ReportRewardForCachedProducts(this._cacheManager);
 
             //'Continue shopping' URL
             _genericAttributeService.SaveAttribute(_workContext.CurrentCustomer, 
@@ -772,7 +772,7 @@ namespace Nop.Web.Controllers
             if (!_storeMappingService.Authorize(manufacturer))
                 return InvokeHttp404();
 
-            DecisionServiceWrapper<string>.ReportRewardForCachedProducts(this._cacheManager);
+            DecisionServiceWrapper<object>.ReportRewardForCachedProducts(this._cacheManager);
 
             //'Continue shopping' URL
             _genericAttributeService.SaveAttribute(_workContext.CurrentCustomer, 
@@ -1130,7 +1130,7 @@ namespace Nop.Web.Controllers
             if (productTag == null)
                 return InvokeHttp404();
 
-            DecisionServiceWrapper<string>.ReportRewardForCachedProducts(this._cacheManager);
+            DecisionServiceWrapper<object>.ReportRewardForCachedProducts(this._cacheManager);
 
             var model = new ProductsByTagModel
             {
