@@ -58,7 +58,7 @@
     <div>
         <a class="button-1" href="@Url.Action("Index", "Home", new { page = 99 })">Reset</a>
     </div>
-     <div id="master-trace-image" class="@traceClass"></div>
+    <div id="master-trace-image" class="@traceClass"></div>
     @for (int i = DecisionServiceTrace.TraceMessageList.Count - 1; i >= 0; i--)
     {
         TraceMessage trm = DecisionServiceTrace.TraceMessageList[i];
@@ -68,5 +68,6 @@
         </div>
     }
 </div>
+<div id="master-trace-hover"></div>
 @Html.Action("EuCookieLaw", "Common")
 @Html.Widget("body_end_html_tag_before")

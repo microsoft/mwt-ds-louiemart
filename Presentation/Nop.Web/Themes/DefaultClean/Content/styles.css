@@ -42,6 +42,7 @@ input[type="text"]:disabled{background:none repeat scroll 0 0 #FFF;}
 .master-trace-date{text-align:left;font-weight:bold;padding:5px 10px;background:#eee;}
 .master-trace-message{text-align:left;padding-left:10px;}
 #master-trace-image{margin:5px 0px;}
+#master-trace-hover{width:400px;height:180px;position:absolute;display:none;padding:10px;border:1px solid gainsboro;border-radius:5px;background-color:white;}
 /*normal trace images*/
 .trace-image-client-server-interaction{height:180px;background:url("http://res.cloudinary.com/dgtxfxwfk/image/upload/c_scale,w_800/v1426358736/trace-client-server-interaction_qtyqko.jpg") no-repeat center;background-size:contain;}
 .trace-image-client-server-reward{height:180px;background:url("http://res.cloudinary.com/dgtxfxwfk/image/upload/c_scale,w_800/v1426358736/trace-client-server-reward_k8eozl.jpg") no-repeat center;background-size:contain;}
