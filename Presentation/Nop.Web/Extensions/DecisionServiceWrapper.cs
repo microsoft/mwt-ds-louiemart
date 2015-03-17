@@ -186,13 +186,13 @@ namespace Nop.Web.Extensions
             // Clear trace messages
             DecisionServiceTrace.Clear();
 
-            if (true)
+            // Reset DecisionService objects
+            if (Service != null)
             {
-                // TODO: turn on actual reset code after testing.
-                return;
+                Service.Flush();
+                Service.Dispose();
             }
 
-            // Reset DecisionService objects
             Explorer = null;
             Configuration = null;
             Service = null;
@@ -227,7 +227,7 @@ namespace Nop.Web.Extensions
 
         public static void ReportRewardForCachedProducts(ICacheManager cacheManager, int explorationJoinKeyIndex = -1)
         {
-            if (cacheManager.IsSet(ProductController.JoinKeyCacheKey))
+            if (cacheManager.IsSet(ProductController.JoinKeyCacheKey) && DecisionServiceWrapper<object>.Service != null)
             {
                 var explorationKeys = cacheManager.Get<List<string>>(ProductController.JoinKeyCacheKey);
                 for (int i = 0; i < explorationKeys.Count; i++)
