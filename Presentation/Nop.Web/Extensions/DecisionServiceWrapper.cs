@@ -24,6 +24,7 @@ namespace Nop.Web.Extensions
         static readonly bool AutoRetrain = true;
         static readonly int ServerObserveDelay = 1000;
         static readonly int ModelRetrainDelay = 5000;
+        static readonly bool UseAfxForModelRetrain = true;
 
         public static EpsilonGreedyExplorer<TContext> Explorer { get; set; }
         public static DecisionServiceConfiguration<TContext> Configuration { get; set; }
@@ -158,7 +159,7 @@ namespace Nop.Web.Extensions
                 {
                     { "token", appToken },
                     { "numberOfActions", numberOfActions.ToString() },
-                    { "useAfx", "true" }
+                    { "useAfx", UseAfxForModelRetrain.ToString() }
                 };
 
                 var content = new System.Net.Http.FormUrlEncodedContent(values);
