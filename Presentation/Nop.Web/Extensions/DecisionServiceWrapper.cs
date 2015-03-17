@@ -40,6 +40,7 @@ namespace Nop.Web.Extensions
             {
                 Configuration = new DecisionServiceConfiguration<TContext>(appId, appToken, Explorer)
                 {
+                    UseLatestPolicy = true,
                     PolicyModelOutputDir = modelOutputDir,
                     BatchConfig = new BatchingConfiguration 
                     {
@@ -151,7 +152,8 @@ namespace Nop.Web.Extensions
                 var values = new Dictionary<string, string>
                 {
                     { "token", appToken },
-                    { "numberOfActions", numberOfActions.ToString() }
+                    { "numberOfActions", numberOfActions.ToString() },
+                    { "useAfx", "true" }
                 };
 
                 var content = new System.Net.Http.FormUrlEncodedContent(values);
