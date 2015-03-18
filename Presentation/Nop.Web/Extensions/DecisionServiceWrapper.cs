@@ -21,6 +21,7 @@ namespace Nop.Web.Extensions
         static readonly string appToken = "c7b77291-f267-43da-8cc3-7df7ec2aeb06";
         static readonly string commandCenterAddress = "http://mwtds.azurewebsites.net";
 
+        static readonly float Epsilon = 0.2f;
         static readonly bool AutoRetrain = true;
         static readonly int ServerObserveDelay = 1000;
         static readonly int ModelRetrainDelay = 5000;
@@ -31,11 +32,11 @@ namespace Nop.Web.Extensions
         public static DecisionService<TContext> Service { get; set; }
         public static DateTimeOffset LastBlobModifiedDate { get; set; }
 
-        public static void Create(float epsilon, uint numActions, string modelOutputDir, int policyAction)
+        public static void Create(uint numActions, string modelOutputDir, int policyAction)
         {
             if (Explorer == null)
             {
-                Explorer = new EpsilonGreedyExplorer<TContext>(new MartPolicy<TContext>(policyAction), epsilon, numActions);
+                Explorer = new EpsilonGreedyExplorer<TContext>(new MartPolicy<TContext>(policyAction), Epsilon, numActions);
             }
 
             if (Configuration == null)

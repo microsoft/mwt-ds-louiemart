@@ -1202,7 +1202,6 @@ namespace Nop.Web.Controllers
             HostingEnvironment.QueueBackgroundWorkItem(token =>
             {
                 DecisionServiceWrapper<object>.Create(
-                    epsilon: .2f,
                     numActions: (uint)model.Count,
                     modelOutputDir: HostingEnvironment.MapPath("~/VWModel/"),
                     policyAction: iHighestRated + 1 // make index 1-based
