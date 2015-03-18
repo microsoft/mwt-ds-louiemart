@@ -18,7 +18,7 @@ namespace Nop.Web.Extensions
     public static class DecisionServiceWrapper<TContext>
     {
         static readonly string appId = "louiemart";
-        static readonly string appToken = "c7b77291-f267-43da-8cc3-7df7ec2aeb06";
+        static readonly string appToken = "10198550-a074-4f9c-8b15-cc389bc2bbbe";
         static readonly string commandCenterAddress = "http://mwtds.azurewebsites.net";
 
         static readonly bool AutoRetrain = true;
