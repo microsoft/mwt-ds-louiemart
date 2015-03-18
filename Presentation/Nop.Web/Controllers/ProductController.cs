@@ -1187,12 +1187,24 @@ namespace Nop.Web.Controllers
             var explorationKeys = new List<string>();
             ManualResetEvent msr = new ManualResetEvent(false);
 
+            float maxAverageReview = 0f;
+            int iHighestRated = -1;
+            for (int i = 0; i < model.Count; i++)
+            {
+                float avgReview = (float)model[i].ReviewOverviewModel.RatingSum / model[i].ReviewOverviewModel.TotalReviews;
+                if (avgReview >= maxAverageReview)
+                {
+                    maxAverageReview = avgReview;
+                    iHighestRated = i;
+                }
+            }
+
             HostingEnvironment.QueueBackgroundWorkItem(token =>
             {
                 DecisionServiceWrapper<object>.Create(
-                    epsilon: .2f,
                     numActions: (uint)model.Count,
-                    modelOutputDir: HostingEnvironment.MapPath("~/VWModel/")
+                    modelOutputDir: HostingEnvironment.MapPath("~/VWModel/"),
+                    policyAction: iHighestRated + 1 // make index 1-based
                 );
 
                 // Ensure uniqueness of exploration products
