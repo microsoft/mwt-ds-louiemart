@@ -22,10 +22,12 @@ namespace Nop.Web.Extensions
         static readonly string commandCenterAddress = "http://mwtds.azurewebsites.net";
 
         static readonly float Epsilon = 0.2f;
-        static readonly bool AutoRetrain = true;
         static readonly int ServerObserveDelay = 1000;
         static readonly int ModelRetrainDelay = 5000;
+
+        static readonly bool AutoRetrain = true;
         static readonly bool UseAfxForModelRetrain = true;
+        static readonly bool UseLatestModel = true;
 
         public static EpsilonGreedyExplorer<TContext> Explorer { get; set; }
         public static DecisionServiceConfiguration<TContext> Configuration { get; set; }
@@ -43,7 +45,7 @@ namespace Nop.Web.Extensions
             {
                 Configuration = new DecisionServiceConfiguration<TContext>(appId, appToken, Explorer)
                 {
-                    UseLatestPolicy = true,
+                    UseLatestPolicy = UseLatestModel,
                     PolicyModelOutputDir = modelOutputDir,
                     BatchConfig = new BatchingConfiguration 
                     {
@@ -178,12 +180,12 @@ namespace Nop.Web.Extensions
                     var t2 = response.Content.ReadAsStringAsync();
                     t2.Wait();
 
-                    Trace.TraceError("AzureML: Failed to retrain model, Result: {0}, Reason: {1}, Headers: {2}.", 
+                    Trace.TraceError("AzureML: Failed to request model retraining, Result: {0}, Reason: {1}, Headers: {2}.", 
                         t2.Result, response.ReasonPhrase, response.Headers.ToString());
                 }
                 else
                 {
-                    Trace.WriteLine("AzureML: Retrain model success.");
+                    Trace.WriteLine("AzureML: Requested model retraining.");
                 }
             }
         }

@@ -37,7 +37,7 @@
             $element.removeClass();
             $element.addClass(defaultClass + ' ' + serverToStorageClass);
         }
-        else if (message.toLowerCase().indexOf("retrain model success") >= 0) {
+        else if (message.toLowerCase().indexOf("requested model retraining") >= 0) {
             $element.removeClass();
             $element.addClass(defaultClass + ' ' + azuremlToStorageClass);
         }
