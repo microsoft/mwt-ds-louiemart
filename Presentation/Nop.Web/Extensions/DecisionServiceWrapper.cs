@@ -25,7 +25,7 @@ namespace Nop.Web.Extensions
         static readonly int ServerObserveDelay = 1000;
         static readonly int ModelRetrainDelay = 5000;
 
-        static readonly bool AutoRetrain = true;
+        static readonly bool AutoRetrain = false;
         static readonly bool UseAfxForModelRetrain = true;
         static readonly bool UseLatestModel = true;
 
@@ -106,33 +106,34 @@ namespace Nop.Web.Extensions
                 {
                     IEnumerable<CloudBlobContainer> containers = blobClient.ListContainers("complete");
 
-                    var lastDate = new DateTimeOffset();
+                    var lastContainerDate = new DateTimeOffset();
                     CloudBlobContainer lastContainer = null;
                     foreach (var container in containers)
                     {
-                        if (container.Properties.LastModified.Value >= lastDate)
+                        if (container.Properties.LastModified.Value >= lastContainerDate)
                         {
-                            lastDate = container.Properties.LastModified.Value;
+                            lastContainerDate = container.Properties.LastModified.Value;
                             lastContainer = container;
                         }
                     }
                     if (lastContainer != null)
                     {
+                        var lastBlobDate = new DateTimeOffset();
                         IEnumerable<IListBlobItem> blobs = lastContainer.ListBlobs();
                         foreach (var blob in blobs)
                         {
                             if (blob is CloudBlockBlob)
                             {
                                 DateTimeOffset blobDate = ((CloudBlockBlob)blob).Properties.LastModified.Value;
-                                if (blobDate >= lastDate)
+                                if (blobDate >= lastBlobDate)
                                 {
-                                    lastDate = blobDate;
+                                    lastBlobDate = blobDate;
                                 }
                             }
                         }
-                        if (lastDate > LastBlobModifiedDate)
+                        if (lastBlobDate > LastBlobModifiedDate)
                         {
-                            LastBlobModifiedDate = lastDate;
+                            LastBlobModifiedDate = lastBlobDate;
                             Trace.WriteLine("Join Server: new data created.");
 
                             AutoRetrainModel(numberOfActions);
