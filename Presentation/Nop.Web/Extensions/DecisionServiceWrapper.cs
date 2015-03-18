@@ -31,11 +31,11 @@ namespace Nop.Web.Extensions
         public static DecisionService<TContext> Service { get; set; }
         public static DateTimeOffset LastBlobModifiedDate { get; set; }
 
-        public static void Create(float epsilon, uint numActions, string modelOutputDir)
+        public static void Create(float epsilon, uint numActions, string modelOutputDir, int policyAction)
         {
             if (Explorer == null)
             {
-                Explorer = new EpsilonGreedyExplorer<TContext>(new MartPolicy<TContext>(), epsilon, numActions);
+                Explorer = new EpsilonGreedyExplorer<TContext>(new MartPolicy<TContext>(policyAction), epsilon, numActions);
             }
 
             if (Configuration == null)
@@ -304,9 +304,14 @@ namespace Nop.Web.Extensions
 
     class MartPolicy<TContext> : IPolicy<TContext>
     {
+        private int action = 0;
+        public MartPolicy(int action)
+        {
+            this.action = action;
+        }
         public uint ChooseAction(TContext context)
         {
-            return 5;
+            return (uint)this.action;
         }
     }
 
