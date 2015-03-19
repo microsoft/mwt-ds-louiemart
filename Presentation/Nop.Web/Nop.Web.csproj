@@ -261,6 +261,7 @@
     <Compile Include="Controllers\CustomerController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Extensions\AttributeParserHelper.cs" />
+    <Compile Include="Extensions\DecisionServiceSettings.cs" />
     <Compile Include="Extensions\DecisionServiceWrapper.cs" />
     <Compile Include="Extensions\HtmlExtensions.cs" />
     <Compile Include="Extensions\ControllerExtensions.cs" />

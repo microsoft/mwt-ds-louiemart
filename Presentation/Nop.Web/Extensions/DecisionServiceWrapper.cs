@@ -10,8 +10,10 @@ using Nop.Web.Hubs;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Net;
 using System.Threading;
+using System.Web.Hosting;
 
 namespace Nop.Web.Extensions
 {
@@ -20,14 +22,7 @@ namespace Nop.Web.Extensions
         static readonly string appId = "louiemart";
         static readonly string appToken = "10198550-a074-4f9c-8b15-cc389bc2bbbe";
         static readonly string commandCenterAddress = "http://mwtds.azurewebsites.net";
-
-        static readonly float Epsilon = 0.2f;
-        static readonly int ServerObserveDelay = 1000;
-        static readonly int ModelRetrainDelay = 5000;
-
-        static readonly bool AutoRetrain = false;
-        static readonly bool UseAfxForModelRetrain = true;
-        static readonly bool UseLatestModel = true;
+        static readonly string settingsFile = HostingEnvironment.MapPath("~/settings.json");
 
         public static EpsilonGreedyExplorer<TContext> Explorer { get; set; }
         public static DecisionServiceConfiguration<TContext> Configuration { get; set; }
@@ -38,14 +33,14 @@ namespace Nop.Web.Extensions
         {
             if (Explorer == null)
             {
-                Explorer = new EpsilonGreedyExplorer<TContext>(new MartPolicy<TContext>(policyAction), Epsilon, numActions);
+                Explorer = new EpsilonGreedyExplorer<TContext>(new MartPolicy<TContext>(policyAction), LoadSettings().Epsilon, numActions);
             }
 
             if (Configuration == null)
             {
                 Configuration = new DecisionServiceConfiguration<TContext>(appId, appToken, Explorer)
                 {
-                    UseLatestPolicy = UseLatestModel,
+                    UseLatestPolicy = LoadSettings().UseLatestModel,
                     PolicyModelOutputDir = modelOutputDir,
                     BatchConfig = new BatchingConfiguration 
                     {
@@ -61,6 +56,11 @@ namespace Nop.Web.Extensions
             if (Service == null)
             {
                 Service = new DecisionService<TContext>(Configuration);
+            }
+
+            if (!File.Exists(settingsFile))
+            {
+                File.WriteAllText(settingsFile, JsonConvert.SerializeObject(new DecisionServiceSettings()));
             }
         }
 
@@ -84,10 +84,14 @@ namespace Nop.Web.Extensions
             }
             catch { }
 
+            DecisionServiceSettings settings = LoadSettings();
+            int serverObserveDelay = settings.ServerObserveDelay;
+            int modelRetrainPeriodicDelay = settings.ModelRetrainPeriodicDelay;
+
             if (storageAccount == null || blobClient == null)
             {
                 retrainOnUpdate = false;
-                Trace.TraceWarning("Could not connect to Azure Storage for observation, Model Retraining will run automatically every {0} ms.", ModelRetrainDelay);
+                Trace.TraceWarning("Could not connect to Azure Storage for observation, Model Retraining will run automatically every {0} ms.", modelRetrainPeriodicDelay);
             }
 
             int waitCount = 0;
@@ -99,7 +103,7 @@ namespace Nop.Web.Extensions
 
             while (!cancelToken.IsCancellationRequested)
             {
-                cancelToken.WaitHandle.WaitOne(ServerObserveDelay);
+                cancelToken.WaitHandle.WaitOne(serverObserveDelay);
                 waitCount++;
 
                 if (retrainOnUpdate)
@@ -142,10 +146,15 @@ namespace Nop.Web.Extensions
                 }
                 else
                 {
-                    if (waitCount >= ((float)ModelRetrainDelay / ServerObserveDelay))
+                    if (waitCount >= ((float)modelRetrainPeriodicDelay / serverObserveDelay))
                     {
                         AutoRetrainModel(numberOfActions);
                         waitCount = 0;
+
+                        // Reload new settings here for consistency
+                        settings = LoadSettings();
+                        serverObserveDelay = settings.ServerObserveDelay;
+                        modelRetrainPeriodicDelay = settings.ModelRetrainPeriodicDelay;
                     }
                 }
             }
@@ -153,7 +162,7 @@ namespace Nop.Web.Extensions
 
         static void AutoRetrainModel(int numberOfActions)
         {
-            if (!AutoRetrain)
+            if (!LoadSettings().AutoRetrainModel)
             {
                 return;
             }
@@ -163,7 +172,7 @@ namespace Nop.Web.Extensions
                 {
                     { "token", appToken },
                     { "numberOfActions", numberOfActions.ToString() },
-                    { "useAfx", UseAfxForModelRetrain.ToString() }
+                    { "useAfx", LoadSettings().UseAfxForModelRetrain.ToString() }
                 };
 
                 var content = new System.Net.Http.FormUrlEncodedContent(values);
@@ -257,6 +266,18 @@ namespace Nop.Web.Extensions
                 cacheManager.Remove(ProductController.JoinKeyCacheKey);
 
                 CurrentTraceType.Value = TraceType.ClientToServerReward;
+            }
+        }
+
+        private static DecisionServiceSettings LoadSettings()
+        {
+            try
+            {
+                return JsonConvert.DeserializeObject<DecisionServiceSettings>(File.ReadAllText(settingsFile));
+            }
+            catch
+            {
+                return new DecisionServiceSettings();
             }
         }
     }
