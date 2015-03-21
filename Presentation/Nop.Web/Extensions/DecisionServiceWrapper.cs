@@ -340,6 +340,15 @@ namespace Nop.Web.Extensions
         }
     }
 
+    public class MartContext
+    {
+        public string Features { get; set; }
+        public override string ToString()
+        {
+            return Features;
+        }
+    }
+
     public class ApplicationTransferMetadata
     {
         public string ApplicationID { get; set; }
