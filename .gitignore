@@ -20,4 +20,5 @@
 *.pubxml
 
 # custom ignore
+settings.json
 VWModel
