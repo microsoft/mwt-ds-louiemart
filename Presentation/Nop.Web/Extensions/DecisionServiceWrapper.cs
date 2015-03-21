@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Web.Hosting;
@@ -24,7 +25,7 @@ namespace Nop.Web.Extensions
         static readonly string commandCenterAddress = "http://mwtds.azurewebsites.net";
         static readonly string settingsFile = HostingEnvironment.MapPath("~/settings.json");
 
-        public static EpsilonGreedyExplorer<TContext> Explorer { get; set; }
+        public static IExplorer<TContext> Explorer { get; set; }
         public static DecisionServiceConfiguration<TContext> Configuration { get; set; }
         public static DecisionService<TContext> Service { get; set; }
         public static DateTimeOffset LastBlobModifiedDate { get; set; }
@@ -33,7 +34,8 @@ namespace Nop.Web.Extensions
         {
             if (Explorer == null)
             {
-                Explorer = new EpsilonGreedyExplorer<TContext>(new MartPolicy<TContext>(policyAction), LoadSettings().Epsilon, numActions);
+                Explorer = new SoftmaxExplorer<TContext>(
+                    new MartPolicy<TContext>(policyAction, (int)numActions), 1, numActions);
             }
 
             if (Configuration == null)
@@ -327,12 +329,20 @@ namespace Nop.Web.Extensions
         }
     }
 
-    class MartPolicy<TContext> : IPolicy<TContext>
+    class MartPolicy<TContext> : IPolicy<TContext>, IScorer<TContext>
     {
         private int action = 0;
-        public MartPolicy(int action)
+        private int numActions = 0;
+        public MartPolicy(int action, int numActions)
         {
             this.action = action;
+            this.numActions = numActions;
+        }
+        public List<float> ScoreActions(TContext context)
+        {
+            float[] scores = new float[this.numActions];
+            scores[action - 1] = 1;
+            return scores.ToList();
         }
         public uint ChooseAction(TContext context)
         {
