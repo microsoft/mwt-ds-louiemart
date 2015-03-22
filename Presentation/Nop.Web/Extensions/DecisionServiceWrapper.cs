@@ -11,7 +11,9 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net;
+using System.Text;
 using System.Threading;
 using System.Web.Hosting;
 
@@ -260,7 +262,31 @@ namespace Nop.Web.Extensions
                         DecisionServiceWrapper<object>.Service.ReportReward(1f, explorationKeys[i]);
                     }
                 }
-                Trace.WriteLine("Reported rewards for presented products.");
+
+                var imageHtmlBuilder = new StringBuilder();
+
+                if (cacheManager.IsSet(ProductController.CacheKey))
+                {
+                    var model = cacheManager.Get<IList<Nop.Web.Models.Catalog.ProductOverviewModel>>(ProductController.CacheKey);
+                    for (int i = 0; i < model.Count; i++)
+                    {
+                        if (model[i].ExplorationJoinKeyIndex != -1)
+                        {
+                            string imageClass = string.Empty;
+                            if (model[i].ExplorationJoinKeyIndex == explorationJoinKeyIndex)
+                            {
+                                imageClass = "mwt-rewarded";
+                            }
+                            imageHtmlBuilder.Append(string.Format("<img class=\"{0}\" src=\"{1}\" />", 
+                                imageClass,
+                                model[i].DefaultPictureModel.ImageUrl));
+                        }
+                    }
+                }
+
+                string imageHtml = imageHtmlBuilder.Length > 0 ? " <br /> <br /> " + imageHtmlBuilder.ToString() : imageHtmlBuilder.ToString();
+
+                Trace.WriteLine("Reported rewards for presented products" + imageHtml);
 
                 // Clears cache once rewards have been determined.
                 cacheManager.Remove(ProductController.JoinKeyCacheKey);

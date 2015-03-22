@@ -41,6 +41,8 @@ input[type="text"]:disabled{background:none repeat scroll 0 0 #FFF;}
 #master-wrapper-trace{position:fixed;top:30px;right:10px;bottom:30px;overflow-y:scroll;width:300px;padding:10px 5px 10px 5px;background:none repeat scroll 0 0 #FFF;box-shadow:0 0.5em 2em rgba(0,0,0,0.1);-moz-box-shadow:0 0.5em 2em rgba(0,0,0,0.1);-webkit-box-shadow:0 0.5em 2em rgba(0,0,0,0.1);}
 .master-trace-date{text-align:left;font-weight:bold;padding:5px 10px;background:#eee;}
 .master-trace-message{text-align:left;padding-left:10px;}
+.master-trace-message img{width:50px;opacity:0.5;}
+.master-trace-message img.mwt-rewarded{width:50px;opacity:1;border:1px solid red;border-radius:5px;}
 #master-trace-image{margin:5px 0px;}
 #master-trace-hover{width:400px;height:180px;position:absolute;display:none;padding:10px;border:1px solid gainsboro;border-radius:5px;background-color:white;}
 /*normal trace images*/

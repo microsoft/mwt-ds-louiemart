@@ -1191,6 +1191,7 @@ namespace Nop.Web.Controllers
             int iHighestRated = -1;
             for (int i = 0; i < model.Count; i++)
             {
+                model[i].ExplorationJoinKeyIndex = -1;
                 float avgReview = (float)model[i].ReviewOverviewModel.RatingSum / model[i].ReviewOverviewModel.TotalReviews;
                 if (avgReview >= maxAverageReview)
                 {
