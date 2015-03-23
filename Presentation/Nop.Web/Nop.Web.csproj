@@ -1578,6 +1578,9 @@
     <Content Include="Scripts\kendo\2014.1.318\jquery.min.map" />
     <None Include="Scripts\_references.js" />
     <Content Include="Themes\DefaultClean\Content\images\free-shipping.png" />
+    <Content Include="Themes\DefaultClean\Content\images\ico-azureml.png" />
+    <Content Include="Themes\DefaultClean\Content\images\ico-client.png" />
+    <Content Include="Themes\DefaultClean\Content\images\ico-server.png" />
     <Content Include="Themes\DefaultClean\Content\images\mobile-menu-collapse.png" />
     <Content Include="Themes\DefaultClean\Content\images\mobile-menu-expand.png" />
     <Content Include="Themes\DefaultClean\Content\images\top-menu-background.png" />
