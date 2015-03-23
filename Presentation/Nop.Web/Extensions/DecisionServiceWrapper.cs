@@ -328,6 +328,15 @@ namespace Nop.Web.Extensions
                     Message = string.Format("Max # trace messages received : {0}, resetting.", DecisionServiceTrace.MaxTraceCount)
                 });
             }
+
+            string lowerCaseMessage = trm.Message.ToLower();
+            if (lowerCaseMessage.Contains("model update") ||
+                lowerCaseMessage.Contains("successfully uploaded") ||
+                lowerCaseMessage.Contains("retrieved new model"))
+            {
+                trm.Message = TraceMessage.GetHeader(TraceMessage.TraceComponentType.Client) + trm.Message;
+            }
+
             traceMessageList.Add(trm);
 
             IHubContext hub = GlobalHost.ConnectionManager.GetHubContext<TraceHub>();
