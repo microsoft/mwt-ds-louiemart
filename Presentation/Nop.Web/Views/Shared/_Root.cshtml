@@ -64,7 +64,7 @@
         TraceMessage trm = DecisionServiceTrace.TraceMessageList[i];
         <div>
             <p class="master-trace-date" data-utcdate="@trm.TimeStampInMillisecSinceUnixEpoch"></p>
-            <p class="master-trace-message">@trm.Message</p>
+            <p class="master-trace-message">@Html.Raw(@trm.Message)</p>
         </div>
     }
 </div>

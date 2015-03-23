@@ -13,6 +13,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text;
 using System.Threading;
 using System.Web.Hosting;
 
@@ -140,7 +141,7 @@ namespace Nop.Web.Extensions
                         if (lastBlobDate > LastBlobModifiedDate)
                         {
                             LastBlobModifiedDate = lastBlobDate;
-                            Trace.WriteLine("Join Server: new data created.");
+                            Trace.WriteLine(TraceMessage.GetHeader(TraceMessage.TraceComponentType.Server) + "new data created.");
 
                             AutoRetrainModel(numberOfActions);
                         }
@@ -192,12 +193,12 @@ namespace Nop.Web.Extensions
                     var t2 = response.Content.ReadAsStringAsync();
                     t2.Wait();
 
-                    Trace.TraceError("AzureML: Failed to request model retraining, Result: {0}, Reason: {1}, Headers: {2}.", 
+                    Trace.TraceError(TraceMessage.GetHeader(TraceMessage.TraceComponentType.AzureML) + "Failed to request model retraining, Result: {0}, Reason: {1}, Headers: {2}.", 
                         t2.Result, response.ReasonPhrase, response.Headers.ToString());
                 }
                 else
                 {
-                    Trace.WriteLine("AzureML: Requested model retraining.");
+                    Trace.WriteLine(TraceMessage.GetHeader(TraceMessage.TraceComponentType.AzureML) + "Requested model retraining.");
                 }
             }
         }
@@ -262,7 +263,31 @@ namespace Nop.Web.Extensions
                         DecisionServiceWrapper<object>.Service.ReportReward(1f, explorationKeys[i]);
                     }
                 }
-                Trace.WriteLine("Reported rewards for presented products.");
+
+                var imageHtmlBuilder = new StringBuilder();
+
+                if (cacheManager.IsSet(ProductController.CacheKey))
+                {
+                    var model = cacheManager.Get<IList<Nop.Web.Models.Catalog.ProductOverviewModel>>(ProductController.CacheKey);
+                    for (int i = 0; i < model.Count; i++)
+                    {
+                        if (model[i].ExplorationJoinKeyIndex != -1)
+                        {
+                            string imageClass = string.Empty;
+                            if (model[i].ExplorationJoinKeyIndex == explorationJoinKeyIndex)
+                            {
+                                imageClass = "mwt-rewarded";
+                            }
+                            imageHtmlBuilder.Append(string.Format("<img class=\"{0}\" src=\"{1}\" />", 
+                                imageClass,
+                                model[i].DefaultPictureModel.ImageUrl));
+                        }
+                    }
+                }
+
+                string imageHtml = imageHtmlBuilder.Length > 0 ? " <br /> <br /> " + imageHtmlBuilder.ToString() : imageHtmlBuilder.ToString();
+
+                Trace.WriteLine(TraceMessage.GetHeader(TraceMessage.TraceComponentType.Client) + "Reported rewards for presented products" + imageHtml);
 
                 // Clears cache once rewards have been determined.
                 cacheManager.Remove(ProductController.JoinKeyCacheKey);
@@ -327,6 +352,28 @@ namespace Nop.Web.Extensions
                 .Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc))
                 .TotalMilliseconds;
         }
+
+        public enum TraceComponentType
+        {
+            Client = 0,
+            Server,
+            AzureML
+        }
+
+        public static string GetHeader(TraceComponentType type)
+        {
+            string imageHtml = "<img src=\"{0}\" class=\"mwt-header\" /> {1}: ";
+            switch (type)
+            {
+                case TraceComponentType.Client:
+                    return string.Format(imageHtml, "/Themes/DefaultClean/Content/images/ico-client.png", type.ToString());
+                case TraceComponentType.Server:
+                    return string.Format(imageHtml, "/Themes/DefaultClean/Content/images/ico-server.png", type.ToString());
+                case TraceComponentType.AzureML:
+                    return string.Format(imageHtml, "/Themes/DefaultClean/Content/images/ico-azureml.png", type.ToString());
+            }
+            return string.Empty;
+        }
     }
 
     class MartPolicy<TContext> : IPolicy<TContext>, IScorer<TContext>
@@ -347,6 +394,15 @@ namespace Nop.Web.Extensions
         public uint ChooseAction(TContext context)
         {
             return (uint)this.action;
+        }
+    }
+
+    public class MartContext
+    {
+        public string Features { get; set; }
+        public override string ToString()
+        {
+            return Features;
         }
     }
 

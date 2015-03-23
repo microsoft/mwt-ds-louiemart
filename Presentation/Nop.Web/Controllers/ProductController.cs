@@ -1191,6 +1191,7 @@ namespace Nop.Web.Controllers
             int iHighestRated = -1;
             for (int i = 0; i < model.Count; i++)
             {
+                model[i].ExplorationJoinKeyIndex = -1;
                 float avgReview = (float)model[i].ReviewOverviewModel.RatingSum / model[i].ReviewOverviewModel.TotalReviews;
                 if (avgReview >= maxAverageReview)
                 {
@@ -1212,7 +1213,8 @@ namespace Nop.Web.Controllers
                 while (explorationProducts.Count < PageSize)
                 {
                     string uniqueKey = Guid.NewGuid().ToString();
-                    int productIdx = (int)DecisionServiceWrapper<object>.Service.ChooseAction(uniqueKey, context: new { IPAddress = _webHelper.GetCurrentIpAddress() } );
+                    string oneHotSlotFeatures = string.Format("{0}:1", explorationProducts.Count + 1);
+                    int productIdx = (int)DecisionServiceWrapper<object>.Service.ChooseAction(uniqueKey, context: new MartContext { Features = oneHotSlotFeatures });
                     productIdx--; // Convert to 0-based index
                     if (!uniqueProductSet.Contains(productIdx))
                     {
