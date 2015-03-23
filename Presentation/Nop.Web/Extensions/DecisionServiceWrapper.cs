@@ -140,7 +140,7 @@ namespace Nop.Web.Extensions
                         if (lastBlobDate > LastBlobModifiedDate)
                         {
                             LastBlobModifiedDate = lastBlobDate;
-                            Trace.WriteLine("Join Server: new data created.");
+                            Trace.WriteLine(TraceMessage.GetHeader(TraceMessage.TraceComponentType.Server) + "new data created.");
 
                             AutoRetrainModel(numberOfActions);
                         }
@@ -192,12 +192,12 @@ namespace Nop.Web.Extensions
                     var t2 = response.Content.ReadAsStringAsync();
                     t2.Wait();
 
-                    Trace.TraceError("AzureML: Failed to request model retraining, Result: {0}, Reason: {1}, Headers: {2}.", 
+                    Trace.TraceError(TraceMessage.GetHeader(TraceMessage.TraceComponentType.AzureML) + "Failed to request model retraining, Result: {0}, Reason: {1}, Headers: {2}.", 
                         t2.Result, response.ReasonPhrase, response.Headers.ToString());
                 }
                 else
                 {
-                    Trace.WriteLine("AzureML: Requested model retraining.");
+                    Trace.WriteLine(TraceMessage.GetHeader(TraceMessage.TraceComponentType.AzureML) + "Requested model retraining.");
                 }
             }
         }
@@ -286,7 +286,7 @@ namespace Nop.Web.Extensions
 
                 string imageHtml = imageHtmlBuilder.Length > 0 ? " <br /> <br /> " + imageHtmlBuilder.ToString() : imageHtmlBuilder.ToString();
 
-                Trace.WriteLine("Reported rewards for presented products" + imageHtml);
+                Trace.WriteLine(TraceMessage.GetHeader(TraceMessage.TraceComponentType.Client) + "Reported rewards for presented products" + imageHtml);
 
                 // Clears cache once rewards have been determined.
                 cacheManager.Remove(ProductController.JoinKeyCacheKey);
@@ -350,6 +350,28 @@ namespace Nop.Web.Extensions
             TimeStampInMillisecSinceUnixEpoch = DateTime.UtcNow
                 .Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc))
                 .TotalMilliseconds;
+        }
+
+        public enum TraceComponentType
+        {
+            Client = 0,
+            Server,
+            AzureML
+        }
+
+        public static string GetHeader(TraceComponentType type)
+        {
+            string imageHtml = "<img src=\"{0}\" class=\"mwt-header\" /> {1}: ";
+            switch (type)
+            {
+                case TraceComponentType.Client:
+                    return string.Format(imageHtml, "/Themes/DefaultClean/Content/images/ico-client.png", type.ToString());
+                case TraceComponentType.Server:
+                    return string.Format(imageHtml, "/Themes/DefaultClean/Content/images/ico-server.png", type.ToString());
+                case TraceComponentType.AzureML:
+                    return string.Format(imageHtml, "/Themes/DefaultClean/Content/images/ico-azureml.png", type.ToString());
+            }
+            return string.Empty;
         }
     }
 
