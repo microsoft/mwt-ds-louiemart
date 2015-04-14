@@ -3,6 +3,8 @@ Flight run of nopcommerce site for MWT testing
 
 Instructions to set up locally:
 
+Prerequisites: Visual Studio 2013 Update 4, .Net 4.5.2
+
 1. Clone the client decision service code: **git clone https://github.com/multiworldtesting/decision.git**
 
 2. Clone the louiemart code to the same directory as (1) so your dir should contain: Decision, Louiemart: **git clone https://github.com/multiworldtesting/louiemart.git**
