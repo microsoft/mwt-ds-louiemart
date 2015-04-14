@@ -15,7 +15,6 @@ namespace Nop.Web.Controllers
             var explorer = new EpsilonGreedyExplorer<string>(new MartPolicy(), epsilon: .2f, numActions: 10);
 
             var serviceConfig = new DecisionServiceConfiguration<string>(
-                appId: "rcvtest",
                 authorizationToken: "c01ff675-5710-4814-a961-d03d2d6bce65",
                 explorer: explorer);
 

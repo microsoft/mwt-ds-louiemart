@@ -21,7 +21,6 @@ namespace Nop.Web.Extensions
 {
     public static class DecisionServiceWrapper<TContext>
     {
-        static readonly string appId = "louiemart";
         static readonly string appToken = "10198550-a074-4f9c-8b15-cc389bc2bbbe";
         static readonly string commandCenterAddress = "http://mwtds.azurewebsites.net";
         static readonly string settingsFile = HostingEnvironment.MapPath("~/settings.json");
@@ -40,7 +39,7 @@ namespace Nop.Web.Extensions
 
             if (Configuration == null)
             {
-                Configuration = new DecisionServiceConfiguration<TContext>(appId, appToken, Explorer)
+                Configuration = new DecisionServiceConfiguration<TContext>(appToken, Explorer)
                 {
                     UseLatestPolicy = LoadSettings().UseLatestModel,
                     PolicyModelOutputDir = modelOutputDir,
