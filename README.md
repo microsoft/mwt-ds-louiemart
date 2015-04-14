@@ -31,4 +31,6 @@ Prerequisites: Visual Studio 2013 Update 4, .Net 4.5.2
 
    - Use integrated Windows authentication
 
-7. After install you will see the commerce website page with a sidebar containing some system trace messages like below.
+7. After install you will see the commerce website page with a sidebar containing some system trace messages
+
+**Note**: The website is built for demo purposes only so will not work properly if there are multiple concurrent user sessions.
