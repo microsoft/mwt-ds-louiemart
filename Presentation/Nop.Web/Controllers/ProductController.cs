@@ -1210,13 +1210,14 @@ namespace Nop.Web.Controllers
 
                 // Ensure uniqueness of exploration products
                 var uniqueProductSet = new HashSet<int>();
+                int numDraw = 100;
                 while (explorationProducts.Count < PageSize)
                 {
                     string uniqueKey = Guid.NewGuid().ToString();
                     string oneHotSlotFeatures = string.Format("{0}:1", explorationProducts.Count + 1);
                     int productIdx = (int)DecisionServiceWrapper<object>.Service.ChooseAction(uniqueKey, context: new MartContext { Features = oneHotSlotFeatures });
                     productIdx--; // Convert to 0-based index
-                    if (!uniqueProductSet.Contains(productIdx))
+                    if (!uniqueProductSet.Contains(productIdx) || numDraw <= 0)
                     {
                         model[productIdx].ExplorationJoinKeyIndex = explorationProducts.Count;
 
@@ -1224,6 +1225,7 @@ namespace Nop.Web.Controllers
                         explorationProducts.Add(model[productIdx]);
                         explorationKeys.Add(uniqueKey);
                     }
+                    numDraw--;
                 }
 
                 msr.Set();
