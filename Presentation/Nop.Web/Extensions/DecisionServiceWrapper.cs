@@ -50,7 +50,8 @@ namespace Nop.Web.Extensions
                         MaxEventCount = 100,
                         MaxUploadQueueCapacity = 4,
                         UploadRetryPolicy = BatchUploadRetryPolicy.Retry
-                    }
+                    },
+                    LoggingServiceAddress = "http://decisionservice-demo.cloudapp.net"
                 };
             }
 
