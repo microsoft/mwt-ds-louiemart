@@ -21,8 +21,8 @@ namespace Nop.Web.Extensions
 {
     public static class DecisionServiceWrapper<TContext>
     {
-        static readonly string appToken = "10198550-a074-4f9c-8b15-cc389bc2bbbe";
-        static readonly string commandCenterAddress = "http://mwtds.azurewebsites.net";
+        static readonly string appToken = "3c71bfd7-bc25-47cd-beb0-c773813cca28";
+        static readonly string commandCenterAddress = "http://mwtdsdemo.azurewebsites.net";
         static readonly string settingsFile = HostingEnvironment.MapPath("~/settings.json");
 
         public static EpsilonGreedyExplorer<TContext> Explorer { get; set; }
