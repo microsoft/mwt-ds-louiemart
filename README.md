@@ -13,9 +13,13 @@ Prerequisites: Visual Studio 2013 Update 4, .Net 4.5.2
 
 4. In Louiemart folder, run **localdbsetup.bat**. This sets up localdb instances for the website. 
 
-5. Build and run louiemart x64 configuration (other configs might work but not tested).
+5. Locate the **settings.txt** file in **louiemart\Presentation\Nop.Web\App_Data**. You can either delete this file or remove the values so that its content looks like below: 
+      - DataProvider: 
+      - DataConnectionString:
 
-6. If things work you should get the Install page where you can specify:
+6. Build and run louiemart x64 configuration (other configs might work but not tested).
+
+7. If things work you should get the Install page where you can specify:
 
    - Create Sample Data
 
@@ -31,6 +35,6 @@ Prerequisites: Visual Studio 2013 Update 4, .Net 4.5.2
 
    - Use integrated Windows authentication
 
-7. After install you will see the commerce website page with a sidebar containing some system trace messages
+8. After install you will see the commerce website page with a sidebar containing some system trace messages
 
 **Note**: The website is built for demo purposes only so will not work properly if there are multiple concurrent user sessions.
