@@ -17,7 +17,7 @@ Prerequisites: Visual Studio 2013 Update 4, .Net 4.5.2
       - DataProvider: 
       - DataConnectionString:
 
-6. Build and run louiemart x64 configuration (other configs might work but not tested).
+6. Build and run louiemart x64 configuration (other configs might work but not tested). If you get an error with loading incorrect format, it's likely because Visual Studio attempts to run IIS Express in 32-bit mode. To fix this, in VS 2013, go to Tools -> Options -> Projects and Solutions -> Web Projects -> Use the 64 bit version of IIS Express...
 
 7. If things work you should get the Install page where you can specify:
 
